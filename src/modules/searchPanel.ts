@@ -22,6 +22,83 @@ function getUniqueCategories(): string[] {
   return Array.from(cats).sort();
 }
 
+// Alternative search terms per category (lowercase)
+const categoryKeywords: Record<string, string[]> = {
+  tuin_en_dier: [
+    'hond', 'honden', 'hondenvoer', 'kat', 'katten', 'kattenvoer', 'huisdier', 'huisdieren', 'dierenvoeding', 'voeding', 'dierenwinkel', 'dierbenodigdheden',
+    'tuin', 'tuinieren', 'planten', 'bloemen', 'potten', 'zaden', 'grond', 'schutting', 'hek', 'gazon', 'gras', 'snoeien', 'gereedschap',
+    'vogel', 'vogels', 'vogelvoer', 'aquarium', 'vis', 'vissen', 'konijn', 'hamster', 'cavia', 'riem', 'halsband', 'bench', 'mand',
+    'garden', 'gardening', 'pet', 'pets', 'pet shop', 'dog', 'dogs', 'cat', 'cats', 'animal', 'animals', 'bird', 'fish', 'plants', 'flowers', 'seeds',
+    'garten', 'gartenarbeit', 'haustier', 'haustiere', 'tier', 'tiere', 'hund', 'hunde', 'katze', 'katzen', 'vogel', 'pflanze', 'pflanzen', 'blumen',
+  ],
+  wonen_en_slapen: [
+    'bank', 'banken', 'bankstel', 'sofa', 'hoekbank', 'bed', 'bedden', 'boxspring', 'slaapkamer', 'woonkamer', 'huiskamer',
+    'meubel', 'meubels', 'meubelen', 'meubelwinkel', 'meubelzaak', 'stoel', 'stoelen', 'fauteuil', 'tafel', 'eettafel', 'salontafel', 'bijzettafel',
+    'kast', 'kasten', 'dressoir', 'tv-meubel', 'boekenkast', 'wandkast', 'matras', 'matrassen', 'dekbed', 'kussen', 'hoofdkussen', 'dekbedovertrek',
+    'linnenkast', 'nachtkastje', 'garderobekast', 'eetkamer', 'woonaccessoires', 'woondecoratie', 'decoratie', 'inrichting', 'interieur', 'design',
+    'furniture', 'sofa', 'couch', 'chair', 'table', 'bed', 'mattress', 'bedroom', 'living room', 'cabinet', 'wardrobe', 'interior', 'home decor', 'cushion', 'pillow',
+    'möbel', 'sofa', 'couch', 'stuhl', 'tisch', 'bett', 'matratze', 'schlafen', 'wohnen', 'schlafzimmer', 'wohnzimmer', 'schrank', 'einrichtung', 'dekoration',
+  ],
+  keukens: [
+    'keuken', 'keukens', 'keukenblad', 'aanrecht', 'koken', 'kookplaat', 'inductie', 'oven', 'magnetron', 'vaatwasser', 'koelkast', 'vriezer',
+    'keukenapparatuur', 'apparatuur', 'kraan', 'spoelbak', 'keukenkastje', 'werkblad', 'keukenontwerp', 'keukenrenovatie', 'inbouwkeuken',
+    'kitchen', 'kitchens', 'cooking', 'oven', 'dishwasher', 'fridge', 'refrigerator', 'countertop', 'appliances',
+    'küche', 'küchen', 'kochen', 'herd', 'backofen', 'spülmaschine', 'kühlschrank', 'arbeitsplatte', 'küchengeräte',
+  ],
+  kinderen: [
+    'kind', 'kinderen', 'baby', 'babykamer', 'kinderkamer', 'speelgoed', 'spelen', 'peuter', 'kleuter', 'dreumes',
+    'kinderwagen', 'buggy', 'autostoel', 'kinderstoel', 'wieg', 'ledikant', 'commode', 'luier', 'luiers', 'fles', 'speen',
+    'kinderkleding', 'babykleding', 'schoolspullen', 'rugzak', 'knuffel', 'pop', 'lego', 'puzzel',
+    'kids', 'children', 'child', 'baby', 'toys', 'toddler', 'nursery', 'stroller', 'playroom', 'teddy',
+    'kinder', 'kind', 'baby', 'spielzeug', 'spielen', 'kinderzimmer', 'kinderwagen', 'kuscheltier',
+  ],
+  eten_en_drinken: [
+    'eten', 'drinken', 'restaurant', 'horeca', 'koffie', 'thee', 'lunch', 'ontbijt', 'diner', 'snack', 'broodje', 'taart', 'gebak',
+    'cafe', 'café', 'bar', 'terras', 'brasserie', 'bistro', 'pizzeria', 'friet', 'patat', 'ijs', 'ijsje', 'smoothie', 'sap', 'bier', 'wijn',
+    'food', 'drink', 'drinks', 'coffee', 'tea', 'lunch', 'breakfast', 'dinner', 'snacks', 'cake', 'pizza', 'ice cream', 'juice', 'beer', 'wine',
+    'essen', 'trinken', 'kaffee', 'tee', 'frühstück', 'mittagessen', 'abendessen', 'kuchen', 'bier', 'wein', 'eis', 'getränke',
+  ],
+  parking: [
+    'parkeren', 'parkeerplaats', 'parkeergarage', 'auto', 'parkeerplek', 'p+r', 'stalling', 'parkeertarief', 'parkeerbon',
+    'parking', 'car park', 'car', 'vehicle', 'garage', 'park',
+    'parken', 'parkplatz', 'parkhaus', 'auto', 'fahrzeug', 'stellplatz',
+  ],
+  badkamers: [
+    'badkamer', 'badkamers', 'douche', 'bad', 'ligbad', 'toilet', 'wc', 'wastafel', 'kraan', 'spiegel', 'sanitair',
+    'tegels', 'badkamertegels', 'badkamermeubel', 'handdoek', 'douchekop', 'inloopdouche', 'jacuzzi', 'whirlpool',
+    'bathroom', 'bathrooms', 'shower', 'bath', 'bathtub', 'toilet', 'sink', 'faucet', 'tiles', 'mirror',
+    'badezimmer', 'dusche', 'bad', 'badewanne', 'toilette', 'waschbecken', 'fliesen', 'spiegel', 'sanitär',
+  ],
+  verlichting: [
+    'lamp', 'lampen', 'licht', 'verlichting', 'hanglamp', 'staande lamp', 'tafellamp', 'wandlamp', 'plafondlamp', 'spot', 'spots',
+    'led', 'dimmer', 'kroonluchter', 'buitenlamp', 'buitenverlichting', 'schemerlamp', 'lichtbron', 'fitting',
+    'light', 'lights', 'lighting', 'lamp', 'lamps', 'chandelier', 'pendant', 'spotlight', 'ceiling light',
+    'lampe', 'lampen', 'licht', 'beleuchtung', 'deckenlampe', 'stehlampe', 'tischlampe', 'kronleuchter',
+  ],
+  vloeren: [
+    'vloer', 'vloeren', 'parket', 'laminaat', 'tegels', 'pvc', 'vinyl', 'tapijt', 'vloerkleed', 'kleed', 'vloertegel',
+    'vloerverwarming', 'ondervloer', 'plint', 'plinten', 'natuursteen', 'hout', 'houten vloer', 'bamboe', 'kurk',
+    'floor', 'floors', 'flooring', 'parquet', 'laminate', 'tiles', 'carpet', 'rug', 'vinyl', 'hardwood',
+    'boden', 'böden', 'bodenbelag', 'parkett', 'laminat', 'fliesen', 'teppich', 'vinyl', 'holzboden',
+  ],
+  gordijnen_en_raamdecoratie: [
+    'gordijn', 'gordijnen', 'vitrage', 'rolgordijn', 'jaloezie', 'jaloezieën', 'raambekleding', 'raamdecoratie', 'overgordijn',
+    'plissé', 'vouwgordijn', 'lamellen', 'zonwering', 'screen', 'blackout', 'verduisterend', 'stof', 'stoffen', 'textiel',
+    'curtain', 'curtains', 'blinds', 'drapes', 'window covering', 'roller blind', 'venetian blind', 'fabric', 'shutter',
+    'vorhang', 'vorhänge', 'gardine', 'gardinen', 'jalousie', 'rollo', 'sonnenschutz', 'stoff', 'stoffe',
+  ],
+  tuinmeubelen: [
+    'tuinmeubel', 'tuinmeubelen', 'tuinset', 'loungeset', 'tuinstoel', 'tuintafel', 'parasol', 'zonnebed', 'ligbed',
+    'terras', 'balkon', 'buitenmeubels', 'buitenleven', 'hangmat', 'schommel', 'bbq', 'barbecue', 'buitenkeuken', 'plantenbak',
+    'garden furniture', 'outdoor furniture', 'patio', 'terrace', 'balcony', 'parasol', 'sunbed', 'hammock', 'barbecue',
+    'gartenmöbel', 'gartenstuhl', 'gartentisch', 'sonnenschirm', 'liege', 'terrasse', 'balkon', 'hängematte', 'grill',
+  ],
+};
+
+function getCategoryKeywords(category: string): string[] {
+  return categoryKeywords[category.toLowerCase()] || [];
+}
+
 function getFilteredLocations(query: string, activeCategories: Set<string>): any[] {
   return state.mapLocations.features.filter((f: any) => {
     const p = f.properties;
@@ -33,11 +110,11 @@ function getFilteredLocations(query: string, activeCategories: Set<string>): any
     // Search filter
     if (query) {
       const q = query.toLowerCase();
-      return (
-        (p.name && p.name.toLowerCase().includes(q)) ||
-        (p.category && p.category.toLowerCase().includes(q)) ||
-        (p.locatie && p.locatie.toLowerCase().includes(q))
-      );
+      const nameMatch = p.name && p.name.toLowerCase().includes(q);
+      const catMatch = p.category && p.category.toLowerCase().replace(/_/g, ' ').includes(q);
+      const locMatch = p.locatie && p.locatie.toLowerCase().includes(q);
+      const keywordMatch = p.category && getCategoryKeywords(p.category).some((kw) => kw.includes(q) || q.includes(kw));
+      return nameMatch || catMatch || locMatch || keywordMatch;
     }
     return true;
   });

@@ -82,45 +82,34 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 
   const color = properties.color || '#6B46C1';
 
-  // Build info icons row
+  // Build hero icons (top-left on hero)
+  let socialIcons = '';
+
+  if (properties.telefoonummer) {
+    socialIcons += `<a class="sp-social" href="tel:${properties.telefoonummer.replace(/\s/g, '')}" title="Bellen">${icons.phone}</a>`;
+  }
+
+  if (coordinates) {
+    socialIcons += `<a class="sp-social" href="https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}" target="_blank" rel="noopener" title="Navigeer">${icons.navigate}</a>`;
+  }
+
+  if (properties.instagram) {
+    socialIcons += `<a class="sp-social" href="${properties.instagram}" target="_blank" rel="noopener" title="Instagram">${icons.instagram}</a>`;
+  }
+
+  if (properties.facebook) {
+    socialIcons += `<a class="sp-social" href="${properties.facebook}" target="_blank" rel="noopener" title="Facebook">${icons.facebook}</a>`;
+  }
+
+  if (properties.website) {
+    socialIcons += `<a class="sp-social" href="${properties.website}" target="_blank" rel="noopener" title="Website">${icons.website}</a>`;
+  }
+
+  // Build detail info (address)
   let infoIcons = '';
 
   if (properties.locatie) {
     infoIcons += infoRow(icons.location, properties.locatie);
-  }
-
-  if (properties.telefoonummer) {
-    infoIcons += infoRow(
-      icons.phone,
-      properties.telefoonummer,
-      true,
-      `tel:${properties.telefoonummer.replace(/\s/g, '')}`
-    );
-  }
-
-  if (properties.website) {
-    const displayUrl = properties.website.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
-    infoIcons += infoRow(icons.website, displayUrl, true, properties.website);
-  }
-
-  if (coordinates) {
-    infoIcons += infoRow(
-      icons.navigate,
-      'Navigeer',
-      true,
-      `https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}`
-    );
-  }
-
-  if (properties.instagram) {
-    const handle = properties.instagram.includes('instagram.com')
-      ? '@' + properties.instagram.split('/').filter(Boolean).pop()
-      : properties.instagram;
-    infoIcons += infoRow(icons.instagram, handle, true, properties.instagram);
-  }
-
-  if (properties.facebook) {
-    infoIcons += infoRow(icons.facebook, 'Facebook', true, properties.facebook);
   }
 
   // Build body sections
@@ -211,16 +200,17 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 
   panelElement.innerHTML = `
     <div class="sp-drag-handle"><div class="sp-drag-handle__bar"></div></div>
-    <button class="sp-close">&times;</button>
+    <button class="sp-close" style="background-color: ${color};"></button>
     ${properties.image ? `<div class="sp-hero">
       <img class="sp-hero__img" src="${properties.image}" alt="${properties.name}" />
-      <div class="sp-hero__fade"></div>
+      <div class="sp-hero__overlay" style="background-color: ${color};"></div>
+      ${socialIcons ? `<div class="sp-socials">${socialIcons}</div>` : ''}
     </div>` : ''}
     <div class="sp-head">
       ${properties.category ? `<span class="sp-head__cat" style="color: ${color};">${formatCategory(properties.category)}</span>` : ''}
       <h2 class="sp-head__name">${properties.name}</h2>
+      ${infoIcons ? `<div class="sp-info-bar">${infoIcons}</div>` : ''}
     </div>
-    <div class="sp-info-bar">${infoIcons}</div>
     <div class="sp-body">
       ${sections}
     </div>

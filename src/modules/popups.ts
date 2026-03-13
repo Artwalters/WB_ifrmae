@@ -481,25 +481,12 @@ ${createARButton(properties, 'impressie-button button-base')}
         <div class="popup-wrapper">
           <button class="close-button" aria-label="${t.aria.closePopup}"></button>
           <div class="popup-side popup-front">
-            <div class="content-wrapper">
-              ${properties.image ? `<div class="popup-image-wrapper"><img class="popup-image" src="${properties.image}" alt="" /><div class="popup-image-fade" style="background: linear-gradient(to top, #ffffff 0%, transparent 100%);"></div></div>` : ''}
-              ${(properties.instagram || properties.facebook || properties.website) ? `<div class="popup-socials">
-                ${properties.instagram ? `<a href="${properties.instagram}" target="_blank" rel="noopener" class="popup-social-icon" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>` : ''}
-                ${properties.facebook ? `<a href="${properties.facebook}" target="_blank" rel="noopener" class="popup-social-icon" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>` : ''}
-                ${properties.website ? `<a href="${properties.website}" target="_blank" rel="noopener" class="popup-social-icon" aria-label="Website"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></a>` : ''}
-              </div>` : ''}
-              <div class="popup-title">${properties.name}</div>
-              <div class="popup-description-wrapper">
-                <div class="fade-top"></div>
-                <div class="popup-description">${properties.description}</div>
-                <div class="fade-bottom"></div>
-              </div>
-
-              ${
-                coordinates
-                  ? `<button class="navigate-button button-base" data-lat="${coordinates[1]}" data-lng="${coordinates[0]}" data-color="${properties.color || '#6B46C1'}" aria-label="${t.aria.navigate}">${t.buttons.navigate}</button>`
-                  : ''
-              }
+            ${properties.image ? `<img class="popup-image" src="${properties.image}" alt="${properties.name}" />` : ''}
+            <div class="popup-color-overlay" style="background-color: ${properties.color || '#6B46C1'};"></div>
+            <div class="popup-buttons">
+              ${coordinates
+                ? `<button class="navigate-button button-base" data-lat="${coordinates[1]}" data-lng="${coordinates[0]}" data-color="${properties.color || '#6B46C1'}" aria-label="${t.aria.navigate}">${t.buttons.navigate}</button>`
+                : ''}
               <button class="more-info-button button-base">${t.buttons.moreInfo}</button>
             </div>
           </div>
