@@ -7,6 +7,11 @@ let panelElement: HTMLElement | null = null;
 let buttonElement: HTMLElement | null = null;
 let isOpen = false;
 
+function formatCategory(cat: string): string {
+  const s = cat.replace(/_/g, ' ').toLowerCase();
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 function getUniqueCategories(): string[] {
   const cats = new Set<string>();
   state.mapLocations.features.forEach((f: any) => {
@@ -56,7 +61,7 @@ function renderList(container: HTMLElement, query: string, activeCategories: Set
         </div>
         <div class="search-item__info">
           <span class="search-item__name">${p.name}</span>
-          <span class="search-item__cat">${p.category || ''}</span>
+          <span class="search-item__cat">${p.category ? formatCategory(p.category) : ''}</span>
         </div>
       </button>`;
   }).join('');
@@ -72,6 +77,9 @@ function renderList(container: HTMLElement, query: string, activeCategories: Set
         const map = (window as any).map;
         if (map) {
           createPopup(feature, map);
+        }
+        if (window.matchMedia('(max-width: 767px)').matches) {
+          closeSearchPanel();
         }
       }
     });
@@ -91,7 +99,7 @@ function renderFilters(container: HTMLElement, activeCategories: Set<string>, on
         <label class="search-filter-item">
           <input type="checkbox" value="${cat}" ${activeCategories.has(cat) ? 'checked' : ''} />
           <span class="search-filter-item__check"></span>
-          <span class="search-filter-item__label">${cat}</span>
+          <span class="search-filter-item__label">${formatCategory(cat)}</span>
         </label>
       `).join('')}
     </div>

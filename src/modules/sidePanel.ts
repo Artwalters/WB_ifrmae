@@ -1,9 +1,14 @@
 // Side panel module - shows location details on the left side
 
-import { createPopup } from './popups.js';
+import { closeActivePopup, createPopup } from './popups.js';
 import { state } from './state.js';
 
 let panelElement: HTMLElement | null = null;
+
+function formatCategory(cat: string): string {
+  const s = cat.replace(/_/g, ' ').toLowerCase();
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
 
 function createPanelElement(): HTMLElement {
   const panel = document.createElement('div');
@@ -163,6 +168,10 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 
     if (shops.length === 0) return '';
 
+    // Get icon & color from first shop in this category
+    const catColor = shops[0].properties.color || '#6B46C1';
+    const catIcon = shops[0].properties.icon || '';
+
     let cards = '';
     shops.forEach((f: any) => {
       const p = f.properties;
@@ -170,16 +179,21 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       cards += `
         <button class="sp-similar__card" data-name="${p.name}">
           <div class="sp-similar__image" style="background-image: url('${p.image || ''}'); background-color: ${c};">
-            <div class="sp-similar__overlay" style="background: linear-gradient(to top, ${c} 0%, transparent 100%);"></div>
+            <div class="sp-similar__color-overlay" style="background-color: ${c};"></div>
           </div>
           <span class="sp-similar__name">${p.name}</span>
-          <span class="sp-similar__cat">${p.category || ''}</span>
+          <span class="sp-similar__cat">${p.category ? formatCategory(p.category) : ''}</span>
         </button>`;
     });
 
     return `
       <div class="sp-similar">
-        <h3 class="sp-similar__title">${cat}</h3>
+        <h3 class="sp-similar__title">
+          <span class="sp-similar__marker" style="background-color: ${catColor};">
+            ${catIcon ? `<img src="${catIcon}" alt="" />` : ''}
+          </span>
+          ${formatCategory(cat)}
+        </h3>
         <div class="sp-similar__list">${cards}</div>
       </div>`;
   }).filter(Boolean).join('');
@@ -192,14 +206,18 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       </div>`;
   }
 
+  // Close any active popup when side panel opens
+  closeActivePopup();
+
   panelElement.innerHTML = `
+    <div class="sp-drag-handle"><div class="sp-drag-handle__bar"></div></div>
     <button class="sp-close">&times;</button>
     ${properties.image ? `<div class="sp-hero">
       <img class="sp-hero__img" src="${properties.image}" alt="${properties.name}" />
       <div class="sp-hero__fade"></div>
     </div>` : ''}
     <div class="sp-head">
-      ${properties.category ? `<span class="sp-head__cat" style="color: ${color};">${properties.category}</span>` : ''}
+      ${properties.category ? `<span class="sp-head__cat" style="color: ${color};">${formatCategory(properties.category)}</span>` : ''}
       <h2 class="sp-head__name">${properties.name}</h2>
     </div>
     <div class="sp-info-bar">${infoIcons}</div>
@@ -215,6 +233,36 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   // Close button
   const closeBtn = panelElement.querySelector('.sp-close') as HTMLElement;
   closeBtn.addEventListener('click', closeSidePanel);
+
+  // Mobile swipe-down to close
+  const dragHandle = panelElement.querySelector('.sp-drag-handle') as HTMLElement;
+  if (dragHandle) {
+    let touchStartY = 0;
+    let panelStartTranslate = 0;
+    const panel = panelElement;
+
+    dragHandle.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+      panelStartTranslate = 0;
+      panel.style.transition = 'none';
+    });
+
+    dragHandle.addEventListener('touchmove', (e) => {
+      const dy = e.touches[0].clientY - touchStartY;
+      if (dy > 0) {
+        panelStartTranslate = dy;
+        panel.style.transform = `translateY(${dy}px)`;
+      }
+    });
+
+    dragHandle.addEventListener('touchend', () => {
+      panel.style.transition = '';
+      if (panelStartTranslate > 100) {
+        closeSidePanel();
+      }
+      panel.style.transform = '';
+    });
+  }
 
   // Horizontal drag scrolling for all similar lists
   let hasDragged = false;
