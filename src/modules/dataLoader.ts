@@ -1,0 +1,467 @@
+// Data loading module - loads location data from Webflow
+
+import type { Feature, Point } from 'geojson';
+import type { Map } from 'mapbox-gl';
+
+import { state } from './state.js';
+
+interface LocationData {
+  locationLat: number;
+  locationLong: number;
+  locationID: string;
+  name: string;
+  locationInfo: string;
+  ondernemerkleur: string;
+  descriptionv2: string;
+  icon: string | null;
+  image: string | null;
+  category: string;
+  telefoonummer: string;
+  locatie: string;
+  maps: string | null;
+  website: string | null;
+  instagram: string | null;
+  facebook: string | null;
+  maandag: string;
+  dinsdag: string;
+  woensdag: string;
+  donderdag: string;
+  vrijdag: string;
+  zaterdag: string;
+  zondag: string;
+}
+
+interface ARData {
+  latitude_ar: number;
+  longitude_ar: number;
+  name_ar: string;
+  slug_ar: string;
+  image_ar: string | null;
+  description_ar: string;
+  arkleur: string;
+  icon_ar: string | null;
+  instructie: string;
+  link_ar_mobile: string | null;
+  link_ar_desktop: string | null;
+  category: string | null;
+}
+
+interface LocationFeature extends Feature<Point> {
+  properties: {
+    id: string;
+    description: string;
+    arrayID: number;
+    color: string;
+    name: string;
+    icon?: string | null;
+    image?: string | null;
+    category: string;
+    telefoonummer?: string;
+    locatie?: string;
+    maps?: string | null;
+    website?: string | null;
+    descriptionv2?: string;
+    instagram?: string | null;
+    facebook?: string | null;
+    maandag?: string;
+    dinsdag?: string;
+    woensdag?: string;
+    donderdag?: string;
+    vrijdag?: string;
+    zaterdag?: string;
+    zondag?: string;
+  };
+}
+
+interface ARFeature extends Feature<Point> {
+  properties: {
+    type: 'ar';
+    name: string;
+    slug: string;
+    description: string;
+    arrayID: number;
+    image?: string | null;
+    arkleur: string;
+    icon?: string | null;
+    instructie: string;
+    link_ar_mobile?: string | null;
+    link_ar_desktop?: string | null;
+    category?: string | null;
+  };
+}
+
+/**
+ * Helper function to safely get a value from an element within a parent.
+ * Logs warnings if elements or properties are missing.
+ */
+function getRobustValue(
+  parentElement: Element | null,
+  selector: string,
+  property: string = 'value',
+  defaultValue: any = null,
+  isRequired: boolean = false,
+  itemIndex: number = -1,
+  itemType: string = 'item'
+): any {
+  if (!parentElement) {
+    return defaultValue;
+  }
+
+  const targetElement = parentElement.querySelector(selector);
+
+  if (targetElement) {
+    // Check if the specific property exists (e.g., 'value' for input, 'innerHTML' for div)
+    if (property in targetElement) {
+      return (targetElement as any)[property];
+    }
+    // Property doesn't exist on the found element
+    return defaultValue;
+  }
+  // Required element is missing
+  if (isRequired) {
+    // Cannot process fully
+  }
+  // Return default even if not required, just don't log unless required
+  return defaultValue;
+}
+
+/**
+ * Load location data from CMS DOM elements robustly.
+ * Skips items with invalid coordinates.
+ */
+export function getGeoData(): void {
+  const locationList = document.getElementById('location-list');
+  let loadedCount = 0;
+  let skippedCount = 0;
+
+  if (!locationList) {
+    return; // Stop if the main container is missing
+  }
+
+  // Filter out non-element nodes (like text nodes, comments)
+  Array.from(locationList.childNodes)
+    .filter((node): node is Element => node.nodeType === Node.ELEMENT_NODE)
+    .forEach((element, index) => {
+      // --- Get Essential Data First ---
+      const rawLat = getRobustValue(
+        element,
+        '#locationLatitude',
+        'value',
+        null,
+        true,
+        index,
+        'location'
+      );
+      const rawLong = getRobustValue(
+        element,
+        '#locationLongitude',
+        'value',
+        null,
+        true,
+        index,
+        'location'
+      );
+      const locationID = getRobustValue(
+        element,
+        '#locationID',
+        'value',
+        `missing-id-${index}`,
+        true,
+        index,
+        'location'
+      ); // ID is usually important
+
+      // --- Validate Essential Data ---
+      const locationLat = parseFloat(rawLat);
+      const locationLong = parseFloat(rawLong);
+
+      if (isNaN(locationLat) || isNaN(locationLong)) {
+        skippedCount++;
+        return; // Go to the next iteration/element
+      }
+
+      // --- Get Optional/Other Data Safely ---
+      const locationData: LocationData = {
+        // Essential (already validated)
+        locationLat: locationLat,
+        locationLong: locationLong,
+        locationID: locationID, // Use the validated/defaulted ID
+        // Other data with defaults
+        name: getRobustValue(element, '#name', 'value', 'Naamloos', false, index, 'location'),
+        locationInfo: getRobustValue(
+          element,
+          '.locations-map_card',
+          'innerHTML',
+          '<p>Geen informatie beschikbaar</p>',
+          false,
+          index,
+          'location'
+        ),
+        ondernemerkleur: getRobustValue(
+          element,
+          '#ondernemerkleur',
+          'value',
+          '#A0A0A0',
+          false,
+          index,
+          'location'
+        ), // Grey default color
+        descriptionv2: getRobustValue(
+          element,
+          '#descriptionv2',
+          'value',
+          '',
+          false,
+          index,
+          'location'
+        ),
+        icon: getRobustValue(element, '#icon', 'value', null, false, index, 'location'), // Let Mapbox handle missing icon later if needed
+        image: getRobustValue(element, '#image', 'value', null, false, index, 'location'),
+        category: getRobustValue(element, '#category', 'value', 'Overig', false, index, 'location'), // Default category
+        telefoonummer: getRobustValue(
+          element,
+          '#telefoonnummer',
+          'value',
+          '',
+          false,
+          index,
+          'location'
+        ),
+        locatie: getRobustValue(element, '#locatie', 'value', '', false, index, 'location'),
+        maps: getRobustValue(element, '#maps', 'value', null, false, index, 'location'),
+        website: getRobustValue(element, '#website', 'value', null, false, index, 'location'),
+        instagram: getRobustValue(element, '#instagram', 'value', null, false, index, 'location'),
+        facebook: getRobustValue(element, '#facebook', 'value', null, false, index, 'location'),
+        maandag: getRobustValue(element, '#maandag', 'value', '', false, index, 'location'),
+        dinsdag: getRobustValue(element, '#dinsdag', 'value', '', false, index, 'location'),
+        woensdag: getRobustValue(element, '#woensdag', 'value', '', false, index, 'location'),
+        donderdag: getRobustValue(element, '#donderdag', 'value', '', false, index, 'location'),
+        vrijdag: getRobustValue(element, '#vrijdag', 'value', '', false, index, 'location'),
+        zaterdag: getRobustValue(element, '#zaterdag', 'value', '', false, index, 'location'),
+        zondag: getRobustValue(element, '#zondag', 'value', '', false, index, 'location'),
+      };
+
+      // --- Create Feature ---
+      const feature: LocationFeature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [locationData.locationLong, locationData.locationLat], // Use validated coords
+        },
+        properties: {
+          id: locationData.locationID,
+          description: locationData.locationInfo,
+          arrayID: index, // Keep original index for potential reference
+          color: locationData.ondernemerkleur,
+          name: locationData.name,
+          icon: locationData.icon,
+          image: locationData.image,
+          category: locationData.category,
+          telefoonummer: locationData.telefoonummer,
+          locatie: locationData.locatie,
+          maps: locationData.maps,
+          website: locationData.website,
+          descriptionv2: locationData.descriptionv2,
+          instagram: locationData.instagram,
+          facebook: locationData.facebook,
+          maandag: locationData.maandag,
+          dinsdag: locationData.dinsdag,
+          woensdag: locationData.woensdag,
+          donderdag: locationData.donderdag,
+          vrijdag: locationData.vrijdag,
+          zaterdag: locationData.zaterdag,
+          zondag: locationData.zondag,
+        },
+      };
+
+      // --- Add Feature (if not duplicate ID) ---
+      if (
+        !state.mapLocations.features.some((feat) => feat.properties.id === locationData.locationID)
+      ) {
+        state.mapLocations.features.push(feature);
+        loadedCount++;
+      } else {
+        // Duplicate location ID found and skipped
+        skippedCount++;
+      }
+    });
+}
+
+/**
+ * Load AR location data from CMS DOM elements robustly.
+ * Skips items with invalid coordinates.
+ */
+export function getARData(): void {
+  const arLocationList = document.getElementById('location-ar-list');
+  let loadedCount = 0;
+  let skippedCount = 0;
+  const startIndex = state.mapLocations.features.length; // Start index after regular locations
+
+  if (!arLocationList) {
+    return; // Stop if the main container is missing
+  }
+
+  // Filter out non-element nodes
+  Array.from(arLocationList.childNodes)
+    .filter((node): node is Element => node.nodeType === Node.ELEMENT_NODE)
+    .forEach((element, index) => {
+      const itemIndexForLog = index; // Use original index for logging
+
+      // --- Get Essential Data First ---
+      const rawLat = getRobustValue(
+        element,
+        '#latitude_ar',
+        'value',
+        null,
+        true,
+        itemIndexForLog,
+        'AR'
+      );
+      const rawLong = getRobustValue(
+        element,
+        '#longitude_ar',
+        'value',
+        null,
+        true,
+        itemIndexForLog,
+        'AR'
+      );
+      const name_ar = getRobustValue(
+        element,
+        '#name_ar',
+        'value',
+        `AR Item ${itemIndexForLog}`,
+        true,
+        itemIndexForLog,
+        'AR'
+      ); // Name is likely important
+
+      // --- Validate Essential Data ---
+      const latitude_ar = parseFloat(rawLat);
+      const longitude_ar = parseFloat(rawLong);
+
+      if (isNaN(latitude_ar) || isNaN(longitude_ar)) {
+        skippedCount++;
+        return; // Go to the next iteration/element
+      }
+
+      // --- Get Optional/Other Data Safely ---
+      const arData: ARData = {
+        // Essential (already validated)
+        latitude_ar: latitude_ar,
+        longitude_ar: longitude_ar,
+        name_ar: name_ar,
+        // Other data with defaults
+        slug_ar: getRobustValue(element, '#slug_ar', 'value', '', false, itemIndexForLog, 'AR'),
+        image_ar: getRobustValue(element, '#image_ar', 'value', null, false, itemIndexForLog, 'AR'),
+        description_ar: getRobustValue(
+          element,
+          '#description_ar',
+          'value',
+          'Geen beschrijving.',
+          false,
+          itemIndexForLog,
+          'AR'
+        ),
+        arkleur: getRobustValue(element, '#arkleur', 'value', '#A0A0A0', false, index, 'location'), // Grey default color
+        icon_ar: getRobustValue(element, '#icon_ar', 'value', null, false, itemIndexForLog, 'AR'), // Default icon?
+        // Nieuwe velden
+        instructie: getRobustValue(
+          element,
+          '#instructie',
+          'value',
+          'Geen instructie beschikbaar.',
+          false,
+          itemIndexForLog,
+          'AR'
+        ),
+        link_ar_mobile: getRobustValue(
+          element,
+          '#link_ar_mobile',
+          'value',
+          null,
+          false,
+          itemIndexForLog,
+          'AR'
+        ),
+        link_ar_desktop: getRobustValue(
+          element,
+          '#link_ar_desktop',
+          'value',
+          null,
+          false,
+          itemIndexForLog,
+          'AR'
+        ),
+        category: getRobustValue(element, '#category', 'value', null, false, itemIndexForLog, 'AR'),
+      };
+
+      // Check if required AR links are present
+      if (!arData.link_ar_mobile && !arData.link_ar_desktop) {
+        // Skipping AR item: missing required AR links
+        skippedCount++;
+        return;
+      }
+
+      // --- Create Feature ---
+      const feature: ARFeature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [arData.longitude_ar, arData.latitude_ar], // Use validated coords
+        },
+        properties: {
+          type: 'ar', // Mark as AR type
+          name: arData.name_ar,
+          slug: arData.slug_ar,
+          description: arData.description_ar,
+          arrayID: startIndex + index, // Ensure unique arrayID across both lists
+          image: arData.image_ar,
+          arkleur: arData.arkleur,
+          icon: arData.icon_ar,
+          // Nieuwe velden
+          instructie: arData.instructie,
+          link_ar_mobile: arData.link_ar_mobile,
+          link_ar_desktop: arData.link_ar_desktop,
+          category: arData.category,
+        },
+      };
+
+      // --- Add Feature ---
+      state.mapLocations.features.push(feature);
+      loadedCount++;
+    });
+}
+
+/**
+ * Main function to load all location data
+ */
+export async function loadLocationData(): Promise<typeof state.mapLocations> {
+  // Reset mapLocations in case this script runs multiple times
+  state.mapLocations.features = [];
+
+  // Load both types of data
+  getGeoData();
+  getARData();
+
+  // Return the loaded data
+  return state.mapLocations;
+}
+
+/**
+ * Update map source with loaded data
+ */
+export function updateMapSource(map: Map): void {
+  // Optional: After loading, update the map source if it exists
+  if (map.getSource('locations')) {
+    const source = map.getSource('locations');
+    if (source && 'setData' in source) {
+      (source as any).setData(state.mapLocations);
+    }
+  }
+}
+
+// Initialize data loading when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  loadLocationData();
+});
