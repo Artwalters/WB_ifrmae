@@ -31,6 +31,8 @@ export function getUniqueCategories(): CategoryInfo[] {
       });
     }
   });
+
+
   return Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
 
@@ -65,6 +67,12 @@ const categoryKeywords: Record<string, string[]> = {
     'kinder', 'kind', 'baby', 'spielzeug', 'spielen', 'kinderzimmer', 'kinderwagen', 'kuscheltier',
   ],
   eten_en_drinken: [
+    'eten', 'drinken', 'restaurant', 'horeca', 'koffie', 'thee', 'lunch', 'ontbijt', 'diner', 'snack', 'broodje', 'taart', 'gebak',
+    'cafe', 'café', 'bar', 'terras', 'brasserie', 'bistro', 'pizzeria', 'friet', 'patat', 'ijs', 'ijsje', 'smoothie', 'sap', 'bier', 'wijn',
+    'food', 'drink', 'drinks', 'coffee', 'tea', 'lunch', 'breakfast', 'dinner', 'snacks', 'cake', 'pizza', 'ice cream', 'juice', 'beer', 'wine',
+    'essen', 'trinken', 'kaffee', 'tee', 'frühstück', 'mittagessen', 'abendessen', 'kuchen', 'bier', 'wein', 'eis', 'getränke',
+  ],
+  horeca: [
     'eten', 'drinken', 'restaurant', 'horeca', 'koffie', 'thee', 'lunch', 'ontbijt', 'diner', 'snack', 'broodje', 'taart', 'gebak',
     'cafe', 'café', 'bar', 'terras', 'brasserie', 'bistro', 'pizzeria', 'friet', 'patat', 'ijs', 'ijsje', 'smoothie', 'sap', 'bier', 'wijn',
     'food', 'drink', 'drinks', 'coffee', 'tea', 'lunch', 'breakfast', 'dinner', 'snacks', 'cake', 'pizza', 'ice cream', 'juice', 'beer', 'wine',

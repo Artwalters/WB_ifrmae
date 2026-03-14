@@ -863,11 +863,29 @@ margin-top: 1rem;
   color: #555;
   position: relative;
   overflow: hidden;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  z-index: 0;
+  transition: border-color 0.35s ease, color 0.3s ease;
+}
+
+.sp-search-chip::before {
+  content: '';
+  position: absolute;
+  left: 0.3em;
+  top: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: var(--cat-color);
+  transform: translateY(-50%) scale(1);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+}
+
+.sp-search-chip.is-active::before {
+  transform: translateY(-50%) scale(20);
 }
 
 .sp-search-chip.is-active {
-  background: var(--cat-color);
   border-color: var(--cat-color);
   color: #fff;
 }

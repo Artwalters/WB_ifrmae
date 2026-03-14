@@ -245,18 +245,50 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       const locations = getFilteredLocations(query, activeCategories);
       const categories = getUniqueCategories();
 
-      // Filter chips
-      const chips = categories.map((cat) => {
-        const active = activeCategories.has(cat.name);
-        return `<button class="sp-search-chip ${active ? 'is-active' : ''}" data-cat="${cat.name}" style="--cat-color: ${cat.color};">
-          <span class="sp-search-chip__marker" style="background-color: ${cat.color};">
-            ${cat.icon ? `<img src="${cat.icon}" alt="" />` : ''}
-          </span>
-          ${formatCategory(cat.name)}
-        </button>`;
-      }).join('');
+      // Only build chips once
+      let chipsContainer = dropdown.querySelector('.sp-search-chips') as HTMLElement;
+      if (!chipsContainer) {
+        const chips = categories.map((cat) => {
+          const active = activeCategories.has(cat.name);
+          return `<button class="sp-search-chip ${active ? 'is-active' : ''}" data-cat="${cat.name}" style="--cat-color: ${cat.color};">
+            <span class="sp-search-chip__marker" style="background-color: ${cat.color};">
+              ${cat.icon ? `<img src="${cat.icon}" alt="" />` : ''}
+            </span>
+            ${formatCategory(cat.name)}
+          </button>`;
+        }).join('');
 
-      // Results
+        dropdown.innerHTML = `
+          <div class="sp-search-chips">${chips}</div>
+          <div class="sp-search-results"></div>
+        `;
+        chipsContainer = dropdown.querySelector('.sp-search-chips') as HTMLElement;
+
+        // Chip click handlers (only once)
+        chipsContainer.querySelectorAll('.sp-search-chip').forEach((chip) => {
+          chip.addEventListener('click', () => {
+            const cat = chip.getAttribute('data-cat')!;
+            if (activeCategories.has(cat)) {
+              activeCategories.delete(cat);
+              chip.classList.remove('is-active');
+            } else {
+              activeCategories.add(cat);
+              chip.classList.add('is-active');
+            }
+            updateResults();
+          });
+        });
+      }
+
+      updateResults();
+    };
+
+    const updateResults = () => {
+      const query = searchInput.value;
+      const locations = getFilteredLocations(query, activeCategories);
+      const resultsContainer = dropdown.querySelector('.sp-search-results') as HTMLElement;
+      if (!resultsContainer) return;
+
       const results = locations.slice(0, 10).map((f: any) => {
         const p = f.properties;
         const c = p.color || '#6B46C1';
@@ -271,28 +303,10 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
         </button>`;
       }).join('');
 
-      dropdown.innerHTML = `
-        <div class="sp-search-chips">${chips}</div>
-        <div class="sp-search-results">
-          ${results || '<div class="sp-search-empty">Geen winkels gevonden</div>'}
-        </div>
-      `;
-
-      // Chip click handlers
-      dropdown.querySelectorAll('.sp-search-chip').forEach((chip) => {
-        chip.addEventListener('click', () => {
-          const cat = chip.getAttribute('data-cat')!;
-          if (activeCategories.has(cat)) {
-            activeCategories.delete(cat);
-          } else {
-            activeCategories.add(cat);
-          }
-          renderDropdown();
-        });
-      });
+      resultsContainer.innerHTML = results || '<div class="sp-search-empty">Geen winkels gevonden</div>';
 
       // Result click handlers
-      dropdown.querySelectorAll('.sp-search-result').forEach((item) => {
+      resultsContainer.querySelectorAll('.sp-search-result').forEach((item) => {
         item.addEventListener('click', () => {
           const name = item.getAttribute('data-name');
           const feature = state.mapLocations.features.find(
@@ -316,25 +330,28 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 
     const closeDropdown = () => {
       dropdown.style.display = 'none';
+      dropdown.innerHTML = '';
       clearBtn.style.display = 'none';
       searchInput.value = '';
       searchInput.blur();
+      activeCategories.clear();
     };
 
     searchInput.addEventListener('focus', openDropdown);
-    searchInput.addEventListener('input', renderDropdown);
+    searchInput.addEventListener('input', updateResults);
     clearBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       closeDropdown();
     });
 
     // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
+    document.addEventListener('mousedown', (e) => {
       if (dropdown.style.display === 'none') return;
       const target = e.target as Node;
-      if (!searchInput.contains(target) && !dropdown.contains(target) && !clearBtn.contains(target)) {
-        closeDropdown();
-      }
+      const searchBar = panelElement?.querySelector('.sp-search-bar') as Node;
+      if (searchBar && searchBar.contains(target)) return;
+      if (dropdown.contains(target)) return;
+      closeDropdown();
     });
   }
 
