@@ -80,16 +80,8 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 
   const color = properties.color || '#6B46C1';
 
-  // Build hero icons (top-left on hero)
+  // Build hero icons (social media on hero image)
   let socialIcons = '';
-
-  if (properties.telefoonummer) {
-    socialIcons += `<a class="sp-social" href="tel:${properties.telefoonummer.replace(/\s/g, '')}" title="Bellen">${icons.phone}</a>`;
-  }
-
-  if (coordinates) {
-    socialIcons += `<a class="sp-social" href="https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}" target="_blank" rel="noopener" title="Navigeer">${icons.navigate}</a>`;
-  }
 
   if (properties.instagram) {
     socialIcons += `<a class="sp-social" href="${properties.instagram}" target="_blank" rel="noopener" title="Instagram">${icons.instagram}</a>`;
@@ -99,15 +91,19 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     socialIcons += `<a class="sp-social" href="${properties.facebook}" target="_blank" rel="noopener" title="Facebook">${icons.facebook}</a>`;
   }
 
-  if (properties.website) {
-    socialIcons += `<a class="sp-social" href="${properties.website}" target="_blank" rel="noopener" title="Website">${icons.website}</a>`;
+  // Build action links (phone, navigate, website) — shown under title
+  let actionLinks = '';
+
+  if (properties.telefoonummer) {
+    actionLinks += `<a class="sp-action-link" href="tel:${properties.telefoonummer.replace(/\s/g, '')}">${icons.phone}<span>Bellen</span></a>`;
   }
 
-  // Build detail info (address)
-  let infoIcons = '';
+  if (coordinates) {
+    actionLinks += `<a class="sp-action-link" href="https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}" target="_blank" rel="noopener">${icons.navigate}<span>Navigeer</span></a>`;
+  }
 
-  if (properties.locatie) {
-    infoIcons += infoRow(icons.location, properties.locatie);
+  if (properties.website) {
+    actionLinks += `<a class="sp-action-link" href="${properties.website}" target="_blank" rel="noopener">${icons.website}<span>Website</span></a>`;
   }
 
   // Build body sections
@@ -200,7 +196,7 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     <div class="sp-head">
       ${properties.category ? `<span class="sp-head__cat" style="color: ${color};">${formatCategory(properties.category)}</span>` : ''}
       <h2 class="sp-head__name">${properties.name}</h2>
-      ${infoIcons ? `<div class="sp-info-bar">${infoIcons}</div>` : ''}
+      ${actionLinks ? `<div class="sp-action-links">${actionLinks}</div>` : ''}
     </div>
     <div class="sp-body">
       ${sections}

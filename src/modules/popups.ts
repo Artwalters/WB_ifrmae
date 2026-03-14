@@ -63,7 +63,7 @@ export async function createPopup(location: any, map: Map): Promise<Popup> {
     if (popupContent) {
       (popupContent as HTMLElement).style.transition =
         'all 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-      (popupContent as HTMLElement).style.transform = 'rotate(-5deg) translateY(1.25rem) scale(0.8)'; /* was 20px */
+      (popupContent as HTMLElement).style.transform = 'rotate(-5deg) translateY(1.25rem) scale(0.8)';
       (popupContent as HTMLElement).style.opacity = '0';
     }
   }
@@ -123,10 +123,20 @@ export async function createPopup(location: any, map: Map): Promise<Popup> {
     window.$('.locations-map_item').removeClass('is--show');
   }
 
+  // Skip popup on mobile for testing
+  const isMobile = window.matchMedia('(max-width: 767px)').matches;
+  if (isMobile) {
+    // Only open side panel, no popup
+    if (!isAR) {
+      openSidePanel(properties, coordinates);
+    }
+    return null as any;
+  }
+
   // Create new popup
   const popup = new window.mapboxgl.Popup({
     offset: {
-      bottom: [0, -5],
+      bottom: [0, -20],
       top: [0, 0],
       left: [0, 0],
       right: [0, 0],
@@ -370,8 +380,6 @@ ${createARButton(properties, 'impressie-button button-base')}
         <div class="popup-wrapper">
           <button class="close-button" aria-label="${t.aria.closePopup}"></button>
           <div class="popup-side popup-front">
-            ${properties.image ? `<img class="popup-image" src="${properties.image}" alt="${properties.name}" />` : ''}
-            <div class="popup-color-overlay" style="background-color: ${properties.color || '#6B46C1'};"></div>
           </div>
         </div>
       `,
