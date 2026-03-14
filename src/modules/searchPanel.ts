@@ -18,7 +18,8 @@ interface CategoryInfo {
   icon: string | null;
 }
 
-function getUniqueCategories(): CategoryInfo[] {
+export { CategoryInfo };
+export function getUniqueCategories(): CategoryInfo[] {
   const seen = new Map<string, CategoryInfo>();
   state.mapLocations.features.forEach((f: any) => {
     const p = f.properties;
@@ -110,7 +111,7 @@ function getCategoryKeywords(category: string): string[] {
   return categoryKeywords[category.toLowerCase()] || [];
 }
 
-function getFilteredLocations(query: string, activeCategories: Set<string>): any[] {
+export function getFilteredLocations(query: string, activeCategories: Set<string>): any[] {
   return state.mapLocations.features.filter((f: any) => {
     const p = f.properties;
     if (p.type === 'ar') return false;
@@ -308,7 +309,7 @@ export function closeSearchPanel(): void {
 }
 
 export function initSearchPanel(): void {
-  buttonElement = createSearchButton();
+  // Search is now integrated in side panel, no standalone button needed
 
   // Close on map drag
   const map = (window as any).map;

@@ -1,6 +1,7 @@
 // Side panel module - shows location details on the left side
 
 import { createPopup } from './popups.js';
+import { getFilteredLocations, getUniqueCategories } from './searchPanel.js';
 import { state } from './state.js';
 
 let panelElement: HTMLElement | null = null;
@@ -192,6 +193,20 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       <img class="sp-hero__img" src="${properties.image}" alt="${properties.name}" />
       <div class="sp-hero__overlay" style="background-color: ${color};"></div>
       ${socialIcons ? `<div class="sp-socials">${socialIcons}</div>` : ''}
+      <div class="sp-search-bar">
+        <svg class="sp-search-bar__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input class="sp-search-bar__input" type="text" placeholder="Zoek een winkel..." />
+        <button class="sp-search-bar__clear" aria-label="Sluiten" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="sp-search-dropdown" style="display:none;"></div>
     </div>` : ''}
     <div class="sp-head">
       ${properties.category ? `<span class="sp-head__cat" style="color: ${color};">${formatCategory(properties.category)}</span>` : ''}
@@ -216,6 +231,112 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       panelElement?.classList.add('is-open');
     }
   });
+
+  // Integrated search
+  const searchInput = panelElement.querySelector('.sp-search-bar__input') as HTMLInputElement;
+  const clearBtn = panelElement.querySelector('.sp-search-bar__clear') as HTMLElement;
+  const dropdown = panelElement.querySelector('.sp-search-dropdown') as HTMLElement;
+
+  if (searchInput && dropdown) {
+    const activeCategories = new Set<string>();
+
+    const renderDropdown = () => {
+      const query = searchInput.value;
+      const locations = getFilteredLocations(query, activeCategories);
+      const categories = getUniqueCategories();
+
+      // Filter chips
+      const chips = categories.map((cat) => {
+        const active = activeCategories.has(cat.name);
+        return `<button class="sp-search-chip ${active ? 'is-active' : ''}" data-cat="${cat.name}" style="--cat-color: ${cat.color};">
+          <span class="sp-search-chip__marker" style="background-color: ${cat.color};">
+            ${cat.icon ? `<img src="${cat.icon}" alt="" />` : ''}
+          </span>
+          ${formatCategory(cat.name)}
+        </button>`;
+      }).join('');
+
+      // Results
+      const results = locations.slice(0, 10).map((f: any) => {
+        const p = f.properties;
+        const c = p.color || '#6B46C1';
+        return `<button class="sp-search-result" data-name="${p.name}">
+          <div class="sp-search-result__icon" style="background-color: ${c};">
+            ${p.icon ? `<img src="${p.icon}" alt="" />` : `<span>${p.name.charAt(0)}</span>`}
+          </div>
+          <div class="sp-search-result__info">
+            <span class="sp-search-result__name">${p.name}</span>
+            <span class="sp-search-result__cat">${p.category ? formatCategory(p.category) : ''}</span>
+          </div>
+        </button>`;
+      }).join('');
+
+      dropdown.innerHTML = `
+        <div class="sp-search-chips">${chips}</div>
+        <div class="sp-search-results">
+          ${results || '<div class="sp-search-empty">Geen winkels gevonden</div>'}
+        </div>
+      `;
+
+      // Chip click handlers
+      dropdown.querySelectorAll('.sp-search-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          const cat = chip.getAttribute('data-cat')!;
+          if (activeCategories.has(cat)) {
+            activeCategories.delete(cat);
+          } else {
+            activeCategories.add(cat);
+          }
+          renderDropdown();
+        });
+      });
+
+      // Result click handlers
+      dropdown.querySelectorAll('.sp-search-result').forEach((item) => {
+        item.addEventListener('click', () => {
+          const name = item.getAttribute('data-name');
+          const feature = state.mapLocations.features.find(
+            (f: any) => f.properties.name === name
+          );
+          if (feature) {
+            const map = (window as any).map;
+            if (map) createPopup(feature, map);
+            openSidePanel(feature.properties, feature.geometry.coordinates as [number, number]);
+          }
+          closeDropdown();
+        });
+      });
+    };
+
+    const openDropdown = () => {
+      dropdown.style.display = 'block';
+      clearBtn.style.display = 'flex';
+      renderDropdown();
+    };
+
+    const closeDropdown = () => {
+      dropdown.style.display = 'none';
+      clearBtn.style.display = 'none';
+      searchInput.value = '';
+      searchInput.blur();
+    };
+
+    searchInput.addEventListener('focus', openDropdown);
+    searchInput.addEventListener('input', renderDropdown);
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeDropdown();
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (dropdown.style.display === 'none') return;
+      const target = e.target as Node;
+      if (!searchInput.contains(target) && !dropdown.contains(target) && !clearBtn.contains(target)) {
+        closeDropdown();
+      }
+    });
+  }
 
   // Mobile swipe-down to close
   const dragHandle = panelElement.querySelector('.sp-drag-handle') as HTMLElement;

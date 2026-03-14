@@ -571,8 +571,8 @@ p {
 
 .close-button {
   position: absolute;
-  top: -0.7rem;
-  right: -0.7rem;
+  top: 0.4rem;
+  right: 0.4rem;
   left: auto;
   transform: none;
   background: #4CAF50;
@@ -592,7 +592,7 @@ p {
 
 .close-button:hover {
   background: #43A047;
-  transform: scale(1.1);
+  transform: rotate(90deg) scale(1.1);
 }
 
 /* X for close button */
@@ -751,13 +751,227 @@ margin-top: 1rem;
   transform: rotate(180deg);
 }
 
+/* Search bar on hero */
+.sp-search-bar {
+  position: absolute;
+  top: 0.75em;
+  left: 0.75em;
+  right: 0.75em;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.5em 0.6em;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: 0.6em;
+  cursor: pointer;
+  z-index: 4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.sp-search-bar:hover {
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sp-search-bar__icon {
+  color: #888;
+  flex-shrink: 0;
+}
+
+
+.sp-search-bar__input {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: 0.75em;
+  font-family: Montserrat, sans-serif;
+  color: #333;
+  outline: none;
+}
+
+.sp-search-bar__input::placeholder {
+  color: #999;
+}
+
+.sp-search-bar__clear {
+  border: none;
+  background: none;
+  padding: 0.2em;
+  cursor: pointer;
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.sp-search-bar__clear:hover {
+  color: #333;
+}
+
+/* Search dropdown */
+.sp-search-dropdown {
+  position: absolute;
+  top: 3.5em;
+  left: 0.75em;
+  right: 0.75em;
+  max-height: 70vh;
+  background: #fff;
+  border-radius: 1em;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+}
+
+.sp-search-dropdown::-webkit-scrollbar {
+  width: 3px;
+}
+
+.sp-search-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sp-search-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.sp-search-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em;
+  padding: 0.6em 0.75em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.sp-search-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.3em 0.7em 0.3em 0.3em;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 2em;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.8em;
+  font-family: Montserrat, sans-serif;
+  color: #555;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.sp-search-chip.is-active {
+  background: var(--cat-color);
+  border-color: var(--cat-color);
+  color: #fff;
+}
+
+.sp-search-chip__marker {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sp-search-chip__marker img {
+  width: 1.1em;
+  height: 1.1em;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.sp-search-results {
+  padding: 0.3em 0;
+}
+
+.sp-search-result {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  width: 100%;
+  padding: 0.5em 0.75em;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: Montserrat, sans-serif;
+  transition: background 0.15s ease;
+}
+
+.sp-search-result:hover {
+  background: #f5f5f5;
+}
+
+.sp-search-result__icon {
+  width: 2.2em;
+  height: 2.2em;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sp-search-result__icon img {
+  width: 1.5em;
+  height: 1.5em;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.sp-search-result__icon span {
+  color: #fff;
+  font-size: 0.8em;
+  font-weight: 700;
+}
+
+.sp-search-result__info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sp-search-result__name {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-search-result__cat {
+  font-size: 0.6em;
+  color: #999;
+}
+
+.sp-search-empty {
+  padding: 1.5em;
+  text-align: center;
+  font-size: 0.75em;
+  color: #999;
+}
+
 /* Hero image */
 .sp-hero {
   position: relative;
   width: 100%;
   flex-shrink: 0;
   border-radius: 1.2em 1.2em 0 0;
-  overflow: hidden;
+  overflow: visible;
+}
+
+.sp-hero__img {
+  border-radius: 1.2em 1.2em 0 0;
 }
 
 .sp-hero__img {

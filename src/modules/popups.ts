@@ -287,10 +287,6 @@ export function createPopupContent(properties: any, coordinates?: [number, numbe
       }
 
       .close-button {
-        background: ${properties.color || '#6B46C1'};
-        top: 0;
-        right: 0;
-        border-radius: 0 1em 0 0.5em;
       }
 
       .popup-side.ar {
@@ -300,7 +296,6 @@ export function createPopupContent(properties: any, coordinates?: [number, numbe
 
       .close-button.ar {
         background: ${properties.arkleur || '#fff200'};
-        border-radius: 0 1em 0 0.5em;
       }
 
       .close-button.ar::before,
