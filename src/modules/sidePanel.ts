@@ -187,7 +187,11 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 
   panelElement.innerHTML = `
     <div class="sp-drag-handle"><div class="sp-drag-handle__bar"></div></div>
-    <button class="sp-close" style="background-color: ${color};"></button>
+    <button class="sp-toggle" aria-label="Panel in/uitschuiven">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
     ${properties.image ? `<div class="sp-hero">
       <img class="sp-hero__img" src="${properties.image}" alt="${properties.name}" />
       <div class="sp-hero__overlay" style="background-color: ${color};"></div>
@@ -207,9 +211,15 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   panelElement.offsetHeight;
   panelElement.classList.add('is-open');
 
-  // Close button
-  const closeBtn = panelElement.querySelector('.sp-close') as HTMLElement;
-  closeBtn.addEventListener('click', closeSidePanel);
+  // Toggle button
+  const toggleBtn = panelElement.querySelector('.sp-toggle') as HTMLElement;
+  toggleBtn.addEventListener('click', () => {
+    if (panelElement?.classList.contains('is-open')) {
+      panelElement.classList.remove('is-open');
+    } else {
+      panelElement?.classList.add('is-open');
+    }
+  });
 
   // Mobile swipe-down to close
   const dragHandle = panelElement.querySelector('.sp-drag-handle') as HTMLElement;
