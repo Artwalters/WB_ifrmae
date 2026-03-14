@@ -24,19 +24,7 @@ export const state = {
   set activeFilters(value: Set<string>) { stateManager.setActiveFilters(value); }
 };
 
-// Legacy compatibility functions
-export function setMarkersAdded(value: boolean): void {
-  stateManager.setMarkersAdded(value);
-}
-
-export function setModelsAdded(value: boolean): void {
-  stateManager.setModelsAdded(value);
-}
-
+// Legacy compatibility function used by mapInit
 export function setMap(map: any): void {
   stateManager.setMap(map);
-}
-
-export function getActiveFilters(): Set<string> {
-  return stateManager.getState().activeFilters;
 }

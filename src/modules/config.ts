@@ -9,7 +9,7 @@ export const CONFIG = {
     center: [5.949252153400742, 50.89631881636659] as [number, number],
     // Heerlen Centrum: [5.979642, 50.887634]
     zoom: 15.5,
-    pitch: 45,
+    pitch: 55,
     bearing: -17.6,
     boundary: {
       // Woonboulevard Boundary Center

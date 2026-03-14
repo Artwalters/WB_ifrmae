@@ -1,64 +1,11 @@
 // Popup management module - Part 2
 // This contains the remaining functions from the original popup.js
 
-import type { Map, Popup } from 'mapbox-gl';
+import type { Popup } from 'mapbox-gl';
 
-import { setActivePopup, state } from './state.js';
+import { detectLanguage, popupTranslations } from './i18n.js';
+import { setActivePopup } from './state.js';
 import { openSidePanel, closeSidePanel } from './sidePanel.js';
-
-// Language detection function
-function detectLanguage(): 'nl' | 'en' | 'de' {
-  const path = window.location.pathname;
-  if (path.includes('/en/')) return 'en';
-  if (path.includes('/de/')) return 'de';
-  return 'nl'; // Default to Dutch
-}
-
-// Popup translations (subset needed for this module)
-const popupTranslations = {
-  nl: {
-    buttons: {
-      back: 'Terug'
-    },
-    aria: {
-      closePopup: 'Sluit popup'
-    },
-    navigation: {
-      confirmTitle: 'Navigeer met Google Maps',
-      confirmMessage: 'Je wordt doorgestuurd naar Google Maps. Wil je doorgaan?',
-      confirmYes: 'Ja, navigeer',
-      confirmNo: 'Blijf hier',
-    }
-  },
-  en: {
-    buttons: {
-      back: 'Back'
-    },
-    aria: {
-      closePopup: 'Close popup'
-    },
-    navigation: {
-      confirmTitle: 'Navigate with Google Maps',
-      confirmMessage: 'You will be redirected to Google Maps. Do you want to continue?',
-      confirmYes: 'Yes, navigate',
-      confirmNo: 'Stay here',
-    }
-  },
-  de: {
-    buttons: {
-      back: 'Zurück'
-    },
-    aria: {
-      closePopup: 'Popup schließen'
-    },
-    navigation: {
-      confirmTitle: 'Mit Google Maps navigieren',
-      confirmMessage: 'Sie werden zu Google Maps weitergeleitet. Möchten Sie fortfahren?',
-      confirmYes: 'Ja, navigieren',
-      confirmNo: 'Hier bleiben',
-    }
-  }
-};
 
 /**
  * Beheer top en bottom fade gradients op basis van scroll positie
@@ -371,10 +318,6 @@ export function setupPopupInteractions(popup: Popup, properties: any, coordinate
   // Update height on window resize
   window.addEventListener('resize', adjustPopupHeight);
   cleanupFunctions.push(() => window.removeEventListener('resize', adjustPopupHeight));
-}
-
-export function showImagePopup(_properties: any, _coordinates: any, _contentHeight: number): void {
-  // Image popup removed - function kept as stub for export compatibility
 }
 
 /**

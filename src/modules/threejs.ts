@@ -49,37 +49,8 @@ interface Transform {
   scale: number;
 }
 
-// 3D model configurations
+// 3D model configurations - Woonboulevard modellen
 const modelConfigs: ModelConfig[] = [
-  // Heerlen Centrum modellen (uitgeschakeld voor Woonboulevard)
-  // {
-  //   id: 'schunck',
-  //   origin: [50.88778235149691, 5.979389928151281], // [lat, lng]
-  //   altitude: 0,
-  //   rotate: [Math.PI / 2, 0.45, 0],
-  //   url: 'https://cdn.jsdelivr.net/gh/Artwalters/3dmodels_heerlen@main/schunckv5.glb',
-  //   scale: 1.3,
-  //   materials: {
-  //     'Material.009': '#f0ebe0', // Base - zelfde als extrusions
-  //     'Material.010': 'WINDOW',  // Ramen - speciale marker voor window behandeling
-  //     'Material.011': '#cccccc', // Grijs detail
-  //     'Material.012': '#b60001', // Rood accent
-  //   },
-  // },
-  // {
-  //   id: 'theater',
-  //   origin: [50.886541206107225, 5.972454838314243],
-  //   altitude: 0,
-  //   rotate: [Math.PI / 2, 2.05, 0],
-  //   url: 'https://cdn.jsdelivr.net/gh/Artwalters/3dmodels_heerlen@main/theaterheerlenv4.glb',
-  //   scale: 0.6,
-  //   materials: {
-  //     'Material.009': '#f0ebe0', // Base - zelfde als extrusions
-  //     'Material.010': 'WINDOW',  // Ramen - speciale marker voor window behandeling
-  //     'Material.015': '#cccccc', // Grijs detail
-  //   },
-  // },
-  // Woonboulevard modellen (actief)
   {
     id: 'woonboulevard',
     origin: [50.898577, 5.948917],
@@ -525,9 +496,7 @@ export function createThreeJSLayer(): CustomLayer {
 
             this.scene!.add(scene3D);
           })
-          .catch((err: any) => {
-            // Error loading model - handled by resource manager
-          });
+          .catch(() => {});
       });
 
       // Load image plane
@@ -535,9 +504,7 @@ export function createThreeJSLayer(): CustomLayer {
         .then((plane) => {
           this.scene!.add(plane);
         })
-        .catch((err) => {
-          /* Error loading image plane */
-        });
+        .catch(() => {});
     },
 
     render: function (gl: WebGLRenderingContext, matrix: number[]) {

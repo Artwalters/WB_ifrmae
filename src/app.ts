@@ -7,18 +7,16 @@
 import './app.css';
 
 // Import modules
+import './modules/dataLoader.js'; // Side-effect: loads location data on DOMContentLoaded
 import { setupBoundaryCheck } from './modules/boundaryUtils.js';
 import { CONFIG } from './modules/config.js';
-import { loadLocationData, updateMapSource } from './modules/dataLoader.js';
-import { applyMapFilters, setupLocationFilters, toggleFilter } from './modules/filters.js';
-import { loadFiltersAndUpdateMap } from './modules/localStorage.js';
+import { toggleFilter } from './modules/filters.js';
 import { initializeMap } from './modules/mapInit.js';
 import {
   setupMapInteractionHandlers,
   setupMapLoadHandler,
   setupSidebarHandlers,
 } from './modules/mapInteractions.js';
-import { addMarkers, updateMarkersData, updateMarkerVisibility } from './modules/markers.js';
 import { setupPOIFiltering } from './modules/poi.js';
 import {
   closeActivePopup,
@@ -27,9 +25,10 @@ import {
   handleSnapchatLink,
 } from './modules/popups.js';
 import { state } from './modules/state.js';
-import { setupThreeJSLayer, addCoordinateHelper } from './modules/threejs.js';
+import { setupThreeJSLayer } from './modules/threejs.js';
 import { eventBus, Events } from './modules/eventBus.js';
 import { resourceManager } from './modules/resourceManager.js';
+import { initCompass } from './modules/compass.js';
 import { initSearchPanel } from './modules/searchPanel.js';
 
 // Extend global Window interface
@@ -67,12 +66,6 @@ window.Webflow.push(async (): Promise<void> => {
     setupPOIFiltering(map);
     setupThreeJSLayer(map);
 
-    // Handle zoom changes
-    map.on('zoom', () => {
-      const currentZoom = map.getZoom();
-      updateMarkerVisibility(map, currentZoom);
-    });
-
     // Handle map clicks
     map.on('click', (e) => {
       // Check if click is on a marker
@@ -87,7 +80,8 @@ window.Webflow.push(async (): Promise<void> => {
 
     // Filter handlers are setup in setupLocationFilters() from filters module
     
-    // Initialize search panel
+    // Initialize compass and search panel
+    initCompass(map);
     initSearchPanel();
 
     // Emit map loaded event

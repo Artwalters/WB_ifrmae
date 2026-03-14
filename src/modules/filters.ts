@@ -6,7 +6,6 @@ import { state, stateManager } from './state.js';
 
 // Performance optimization caches
 const buttonCache = new Map<string, HTMLElement>();
-const layerCache = new Map<string, boolean>();
 let buttonElements: HTMLElement[] = [];
 
 /**

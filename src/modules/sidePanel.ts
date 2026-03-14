@@ -1,6 +1,6 @@
 // Side panel module - shows location details on the left side
 
-import { closeActivePopup, createPopup } from './popups.js';
+import { createPopup } from './popups.js';
 import { state } from './state.js';
 
 let panelElement: HTMLElement | null = null;
@@ -45,11 +45,9 @@ function generateOpeningHoursHTML(properties: any): string {
   });
 
   return `
-    <div class="sp-section sp-hours">
-      <div class="sp-section__body">
-        <h3>Openingstijden</h3>
-        <table>${rows}</table>
-      </div>
+    <div class="sp-hours">
+      <h3>Openingstijden</h3>
+      <table>${rows}</table>
     </div>`;
 }
 
@@ -128,14 +126,6 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     sections += hoursHTML;
   }
 
-  // Extra info
-  if (properties.descriptionv2) {
-    sections += `<div class="sp-about">
-      <h3 class="sp-about__title">Goed om te weten</h3>
-      <div class="sp-about__text">${properties.descriptionv2}</div>
-    </div>`;
-  }
-
   // Discover more shops — own category + other categories
   const allShops = state.mapLocations.features.filter(
     (f: any) => f.properties.name !== properties.name && f.properties.type !== 'ar'
@@ -194,9 +184,6 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
         ${categorySliders}
       </div>`;
   }
-
-  // Close any active popup when side panel opens
-  closeActivePopup();
 
   panelElement.innerHTML = `
     <div class="sp-drag-handle"><div class="sp-drag-handle__bar"></div></div>
@@ -318,6 +305,9 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
           createPopup(feature, map);
         }
         openSidePanel(feature.properties, feature.geometry.coordinates as [number, number]);
+        if (panelElement) {
+          panelElement.scrollTop = 0;
+        }
       }
     });
   });

@@ -12,14 +12,25 @@ function formatCategory(cat: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-function getUniqueCategories(): string[] {
-  const cats = new Set<string>();
+interface CategoryInfo {
+  name: string;
+  color: string;
+  icon: string | null;
+}
+
+function getUniqueCategories(): CategoryInfo[] {
+  const seen = new Map<string, CategoryInfo>();
   state.mapLocations.features.forEach((f: any) => {
-    if (f.properties.category && f.properties.type !== 'ar') {
-      cats.add(f.properties.category);
+    const p = f.properties;
+    if (p.category && p.type !== 'ar' && !seen.has(p.category)) {
+      seen.set(p.category, {
+        name: p.category,
+        color: p.color || '#6B46C1',
+        icon: p.icon || null,
+      });
     }
   });
-  return Array.from(cats).sort();
+  return Array.from(seen.values()).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 // Alternative search terms per category (lowercase)
@@ -173,10 +184,12 @@ function renderFilters(container: HTMLElement, activeCategories: Set<string>, on
     </div>
     <div class="search-filters__list">
       ${categories.map((cat) => `
-        <label class="search-filter-item">
-          <input type="checkbox" value="${cat}" ${activeCategories.has(cat) ? 'checked' : ''} />
-          <span class="search-filter-item__check"></span>
-          <span class="search-filter-item__label">${formatCategory(cat)}</span>
+        <label class="search-filter-item" style="--cat-color: ${cat.color};">
+          <input type="checkbox" value="${cat.name}" ${activeCategories.has(cat.name) ? 'checked' : ''} />
+          <span class="search-filter-item__marker" style="background-color: ${cat.color};">
+            ${cat.icon ? `<img src="${cat.icon}" alt="" />` : ''}
+          </span>
+          <span class="search-filter-item__label">${formatCategory(cat.name)}</span>
         </label>
       `).join('')}
     </div>

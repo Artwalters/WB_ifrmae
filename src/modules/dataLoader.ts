@@ -91,37 +91,20 @@ interface ARFeature extends Feature<Point> {
 }
 
 /**
- * Helper function to safely get a value from an element within a parent.
- * Logs warnings if elements or properties are missing.
+ * Safely get a value from a child element within a parent.
  */
 function getRobustValue(
   parentElement: Element | null,
   selector: string,
   property: string = 'value',
   defaultValue: any = null,
-  isRequired: boolean = false,
-  itemIndex: number = -1,
-  itemType: string = 'item'
 ): any {
-  if (!parentElement) {
-    return defaultValue;
-  }
+  if (!parentElement) return defaultValue;
 
   const targetElement = parentElement.querySelector(selector);
-
-  if (targetElement) {
-    // Check if the specific property exists (e.g., 'value' for input, 'innerHTML' for div)
-    if (property in targetElement) {
-      return (targetElement as any)[property];
-    }
-    // Property doesn't exist on the found element
-    return defaultValue;
+  if (targetElement && property in targetElement) {
+    return (targetElement as any)[property];
   }
-  // Required element is missing
-  if (isRequired) {
-    // Cannot process fully
-  }
-  // Return default even if not required, just don't log unless required
   return defaultValue;
 }
 
@@ -131,9 +114,6 @@ function getRobustValue(
  */
 export function getGeoData(): void {
   const locationList = document.getElementById('location-list');
-  let loadedCount = 0;
-  let skippedCount = 0;
-
   if (!locationList) {
     return; // Stop if the main container is missing
   }
@@ -143,102 +123,43 @@ export function getGeoData(): void {
     .filter((node): node is Element => node.nodeType === Node.ELEMENT_NODE)
     .forEach((element, index) => {
       // --- Get Essential Data First ---
-      const rawLat = getRobustValue(
-        element,
-        '#locationLatitude',
-        'value',
-        null,
-        true,
-        index,
-        'location'
-      );
-      const rawLong = getRobustValue(
-        element,
-        '#locationLongitude',
-        'value',
-        null,
-        true,
-        index,
-        'location'
-      );
-      const locationID = getRobustValue(
-        element,
-        '#locationID',
-        'value',
-        `missing-id-${index}`,
-        true,
-        index,
-        'location'
-      ); // ID is usually important
+      const rawLat = getRobustValue(element, '#locationLatitude');
+      const rawLong = getRobustValue(element, '#locationLongitude');
+      const locationID = getRobustValue(element, '#locationID', 'value', `missing-id-${index}`);
 
       // --- Validate Essential Data ---
       const locationLat = parseFloat(rawLat);
       const locationLong = parseFloat(rawLong);
 
       if (isNaN(locationLat) || isNaN(locationLong)) {
-        skippedCount++;
-        return; // Go to the next iteration/element
+        return; // Skip items with invalid coordinates
       }
 
       // --- Get Optional/Other Data Safely ---
       const locationData: LocationData = {
-        // Essential (already validated)
-        locationLat: locationLat,
-        locationLong: locationLong,
-        locationID: locationID, // Use the validated/defaulted ID
-        // Other data with defaults
-        name: getRobustValue(element, '#name', 'value', 'Naamloos', false, index, 'location'),
-        locationInfo: getRobustValue(
-          element,
-          '.locations-map_card',
-          'innerHTML',
-          '<p>Geen informatie beschikbaar</p>',
-          false,
-          index,
-          'location'
-        ),
-        ondernemerkleur: getRobustValue(
-          element,
-          '#ondernemerkleur',
-          'value',
-          '#A0A0A0',
-          false,
-          index,
-          'location'
-        ), // Grey default color
-        descriptionv2: getRobustValue(
-          element,
-          '#descriptionv2',
-          'value',
-          '',
-          false,
-          index,
-          'location'
-        ),
-        icon: getRobustValue(element, '#icon', 'value', null, false, index, 'location'), // Let Mapbox handle missing icon later if needed
-        image: getRobustValue(element, '#image', 'value', null, false, index, 'location'),
-        category: getRobustValue(element, '#category', 'value', 'Overig', false, index, 'location'), // Default category
-        telefoonummer: getRobustValue(
-          element,
-          '#telefoonnummer',
-          'value',
-          '',
-          false,
-          index,
-          'location'
-        ),
-        locatie: getRobustValue(element, '#locatie', 'value', '', false, index, 'location'),
-        maps: getRobustValue(element, '#maps', 'value', null, false, index, 'location'),
-        website: getRobustValue(element, '#website', 'value', null, false, index, 'location'),
-        instagram: getRobustValue(element, '#instagram', 'value', null, false, index, 'location'),
-        facebook: getRobustValue(element, '#facebook', 'value', null, false, index, 'location'),
-        maandag: getRobustValue(element, '#maandag', 'value', '', false, index, 'location'),
-        dinsdag: getRobustValue(element, '#dinsdag', 'value', '', false, index, 'location'),
-        woensdag: getRobustValue(element, '#woensdag', 'value', '', false, index, 'location'),
-        donderdag: getRobustValue(element, '#donderdag', 'value', '', false, index, 'location'),
-        vrijdag: getRobustValue(element, '#vrijdag', 'value', '', false, index, 'location'),
-        zaterdag: getRobustValue(element, '#zaterdag', 'value', '', false, index, 'location'),
-        zondag: getRobustValue(element, '#zondag', 'value', '', false, index, 'location'),
+        locationLat,
+        locationLong,
+        locationID,
+        name: getRobustValue(element, '#name', 'value', 'Naamloos'),
+        locationInfo: getRobustValue(element, '.locations-map_card', 'innerHTML', '<p>Geen informatie beschikbaar</p>'),
+        ondernemerkleur: getRobustValue(element, '#ondernemerkleur', 'value', '#A0A0A0'),
+        descriptionv2: getRobustValue(element, '#descriptionv2', 'value', ''),
+        icon: getRobustValue(element, '#icon'),
+        image: getRobustValue(element, '#image'),
+        category: getRobustValue(element, '#category', 'value', 'Overig'),
+        telefoonummer: getRobustValue(element, '#telefoonnummer', 'value', ''),
+        locatie: getRobustValue(element, '#locatie', 'value', ''),
+        maps: getRobustValue(element, '#maps'),
+        website: getRobustValue(element, '#website'),
+        instagram: getRobustValue(element, '#instagram'),
+        facebook: getRobustValue(element, '#facebook'),
+        maandag: getRobustValue(element, '#maandag', 'value', ''),
+        dinsdag: getRobustValue(element, '#dinsdag', 'value', ''),
+        woensdag: getRobustValue(element, '#woensdag', 'value', ''),
+        donderdag: getRobustValue(element, '#donderdag', 'value', ''),
+        vrijdag: getRobustValue(element, '#vrijdag', 'value', ''),
+        zaterdag: getRobustValue(element, '#zaterdag', 'value', ''),
+        zondag: getRobustValue(element, '#zondag', 'value', ''),
       };
 
       // --- Create Feature ---
@@ -279,10 +200,6 @@ export function getGeoData(): void {
         !state.mapLocations.features.some((feat) => feat.properties.id === locationData.locationID)
       ) {
         state.mapLocations.features.push(feature);
-        loadedCount++;
-      } else {
-        // Duplicate location ID found and skipped
-        skippedCount++;
       }
     });
 }
@@ -293,8 +210,6 @@ export function getGeoData(): void {
  */
 export function getARData(): void {
   const arLocationList = document.getElementById('location-ar-list');
-  let loadedCount = 0;
-  let skippedCount = 0;
   const startIndex = state.mapLocations.features.length; // Start index after regular locations
 
   if (!arLocationList) {
@@ -305,102 +220,38 @@ export function getARData(): void {
   Array.from(arLocationList.childNodes)
     .filter((node): node is Element => node.nodeType === Node.ELEMENT_NODE)
     .forEach((element, index) => {
-      const itemIndexForLog = index; // Use original index for logging
-
       // --- Get Essential Data First ---
-      const rawLat = getRobustValue(
-        element,
-        '#latitude_ar',
-        'value',
-        null,
-        true,
-        itemIndexForLog,
-        'AR'
-      );
-      const rawLong = getRobustValue(
-        element,
-        '#longitude_ar',
-        'value',
-        null,
-        true,
-        itemIndexForLog,
-        'AR'
-      );
-      const name_ar = getRobustValue(
-        element,
-        '#name_ar',
-        'value',
-        `AR Item ${itemIndexForLog}`,
-        true,
-        itemIndexForLog,
-        'AR'
-      ); // Name is likely important
+      const rawLat = getRobustValue(element, '#latitude_ar');
+      const rawLong = getRobustValue(element, '#longitude_ar');
+      const name_ar = getRobustValue(element, '#name_ar', 'value', `AR Item ${index}`);
 
       // --- Validate Essential Data ---
       const latitude_ar = parseFloat(rawLat);
       const longitude_ar = parseFloat(rawLong);
 
       if (isNaN(latitude_ar) || isNaN(longitude_ar)) {
-        skippedCount++;
-        return; // Go to the next iteration/element
+        return; // Skip items with invalid coordinates
       }
 
       // --- Get Optional/Other Data Safely ---
       const arData: ARData = {
-        // Essential (already validated)
-        latitude_ar: latitude_ar,
-        longitude_ar: longitude_ar,
-        name_ar: name_ar,
-        // Other data with defaults
-        slug_ar: getRobustValue(element, '#slug_ar', 'value', '', false, itemIndexForLog, 'AR'),
-        image_ar: getRobustValue(element, '#image_ar', 'value', null, false, itemIndexForLog, 'AR'),
-        description_ar: getRobustValue(
-          element,
-          '#description_ar',
-          'value',
-          'Geen beschrijving.',
-          false,
-          itemIndexForLog,
-          'AR'
-        ),
-        arkleur: getRobustValue(element, '#arkleur', 'value', '#A0A0A0', false, index, 'location'), // Grey default color
-        icon_ar: getRobustValue(element, '#icon_ar', 'value', null, false, itemIndexForLog, 'AR'), // Default icon?
-        // Nieuwe velden
-        instructie: getRobustValue(
-          element,
-          '#instructie',
-          'value',
-          'Geen instructie beschikbaar.',
-          false,
-          itemIndexForLog,
-          'AR'
-        ),
-        link_ar_mobile: getRobustValue(
-          element,
-          '#link_ar_mobile',
-          'value',
-          null,
-          false,
-          itemIndexForLog,
-          'AR'
-        ),
-        link_ar_desktop: getRobustValue(
-          element,
-          '#link_ar_desktop',
-          'value',
-          null,
-          false,
-          itemIndexForLog,
-          'AR'
-        ),
-        category: getRobustValue(element, '#category', 'value', null, false, itemIndexForLog, 'AR'),
+        latitude_ar,
+        longitude_ar,
+        name_ar,
+        slug_ar: getRobustValue(element, '#slug_ar', 'value', ''),
+        image_ar: getRobustValue(element, '#image_ar'),
+        description_ar: getRobustValue(element, '#description_ar', 'value', 'Geen beschrijving.'),
+        arkleur: getRobustValue(element, '#arkleur', 'value', '#A0A0A0'),
+        icon_ar: getRobustValue(element, '#icon_ar'),
+        instructie: getRobustValue(element, '#instructie', 'value', 'Geen instructie beschikbaar.'),
+        link_ar_mobile: getRobustValue(element, '#link_ar_mobile'),
+        link_ar_desktop: getRobustValue(element, '#link_ar_desktop'),
+        category: getRobustValue(element, '#category'),
       };
 
       // Check if required AR links are present
       if (!arData.link_ar_mobile && !arData.link_ar_desktop) {
-        // Skipping AR item: missing required AR links
-        skippedCount++;
-        return;
+        return; // Skip AR items without any AR links
       }
 
       // --- Create Feature ---

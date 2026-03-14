@@ -1,20 +1,10 @@
 // Marker management module
 
-import type { Feature, Point } from 'geojson';
 import type { Map } from 'mapbox-gl';
 
 import { CONFIG } from './config.js';
 import { resourceManager } from './resourceManager.js';
 import { state } from './state.js';
-
-interface LocationFeature extends Feature<Point> {
-  properties: {
-    icon?: string;
-    color: string;
-    name: string;
-    [key: string]: any;
-  };
-}
 
 // Icon loading cache and optimization
 const iconCache = new Map<string, HTMLImageElement>();
@@ -168,6 +158,7 @@ export async function addMarkers(map: Map): Promise<void> {
       id: 'location-labels',
       type: 'symbol' as const,
       layout: {
+        'text-font': ['Montserrat Medium', 'Arial Unicode MS Regular'],
         'text-field': ['get', 'name'],
         'text-size': [
           'interpolate',
@@ -269,35 +260,3 @@ function setupMarkerInteractions(map: Map): void {
   });
 }
 
-/**
- * Update marker visibility based on zoom level
- */
-export function updateMarkerVisibility(map: Map, zoom: number): void {
-  // You can add zoom-based visibility logic here if needed
-  // For now, the visibility is handled by the interpolation expressions in the layer styles
-}
-
-/**
- * Create custom marker element
- */
-export function createCustomMarker(location: LocationFeature): HTMLDivElement {
-  const markerEl = document.createElement('div');
-  markerEl.className = 'custom-marker';
-
-  // Add location-specific styling if needed
-  if (location.properties.color) {
-    markerEl.style.backgroundColor = location.properties.color;
-  }
-
-  return markerEl;
-}
-
-/**
- * Update markers data source
- */
-export function updateMarkersData(map: Map): void {
-  const source = map.getSource('locations');
-  if (source && 'setData' in source) {
-    (source as any).setData(state.mapLocations);
-  }
-}

@@ -11,7 +11,7 @@ export interface ResourceLoadOptions {
  */
 export class ResourceManager {
   private static instance: ResourceManager;
-  private imageCache = new WeakMap<string, HTMLImageElement>();
+  private imageCache = new Map<string, HTMLImageElement>();
   private modelCache = new Map<string, any>();
   private textureCache = new Map<string, any>();
   private loadingPromises = new Map<string, Promise<any>>();
@@ -174,27 +174,6 @@ export class ResourceManager {
   }
 
   /**
-   * Optimize 3D model for better performance
-   */
-  private optimizeModel(model: any): void {
-    model.traverse((child: any) => {
-      if (child.isMesh) {
-        // Enable frustum culling
-        child.frustumCulled = true;
-
-        // Optimize materials
-        if (child.material) {
-          // Reduce material precision for better performance
-          if (child.material.map) {
-            child.material.map.generateMipmaps = false;
-            child.material.map.minFilter = (window as any).THREE?.LinearFilter || 1006;
-          }
-        }
-      }
-    });
-  }
-
-  /**
    * Preload critical resources
    */
   async preloadResources(urls: string[]): Promise<void> {
@@ -218,7 +197,7 @@ export class ResourceManager {
    */
   cleanup(): void {
     // Clear caches
-    this.imageCache = new WeakMap();
+    this.imageCache.clear();
     this.modelCache.clear();
     this.textureCache.clear();
     this.loadingPromises.clear();
@@ -242,7 +221,7 @@ export class ResourceManager {
     const totalLoads = this.loadTimes.size;
 
     return {
-      cachedImages: this.imageCache ? -1 : 0, // WeakMap size not accessible
+      cachedImages: this.imageCache.size,
       cachedModels: this.modelCache.size,
       failedResources: this.failedResources.size,
       averageLoadTime: totalLoads > 0 ? totalLoadTime / totalLoads : 0,
@@ -258,11 +237,8 @@ export class ResourceManager {
     this.loadCounts.set(url, (this.loadCounts.get(url) || 0) + 1);
   }
 
-  /**
-   * Track load error
-   */
-  private trackLoadError(url: string): void {
-    // Error tracking could be extended here
+  private trackLoadError(_url: string): void {
+    // Tracked via failedResources set
   }
 }
 
