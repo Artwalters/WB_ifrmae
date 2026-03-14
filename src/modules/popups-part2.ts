@@ -159,6 +159,7 @@ export function setupPopupInteractions(popup: Popup, properties: any, coordinate
    * Adjust popup height to content
    */
   function adjustPopupHeight(): void {
+    if (!frontContent) return;
     const contentHeight = frontContent.offsetHeight;
     popupWrapper.style.height = `${contentHeight}px`;
 

@@ -153,6 +153,7 @@ export function getGeoData(): void {
         website: getRobustValue(element, '#website'),
         instagram: getRobustValue(element, '#instagram'),
         facebook: getRobustValue(element, '#facebook'),
+        logo_wb: getRobustValue(element, '#logo_wb'),
         maandag: getRobustValue(element, '#maandag', 'value', ''),
         dinsdag: getRobustValue(element, '#dinsdag', 'value', ''),
         woensdag: getRobustValue(element, '#woensdag', 'value', ''),
@@ -185,6 +186,7 @@ export function getGeoData(): void {
           descriptionv2: locationData.descriptionv2,
           instagram: locationData.instagram,
           facebook: locationData.facebook,
+          logo_wb: locationData.logo_wb,
           maandag: locationData.maandag,
           dinsdag: locationData.dinsdag,
           woensdag: locationData.woensdag,
@@ -280,7 +282,6 @@ export function getARData(): void {
 
       // --- Add Feature ---
       state.mapLocations.features.push(feature);
-      loadedCount++;
     });
 }
 

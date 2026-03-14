@@ -375,6 +375,7 @@ ${createARButton(properties, 'impressie-button button-base')}
         <div class="popup-wrapper">
           <button class="close-button" aria-label="${t.aria.closePopup}"></button>
           <div class="popup-side popup-front">
+            ${properties.logo_wb ? `<img class="popup-logo" src="${properties.logo_wb}" alt="${properties.name}" />` : ''}
           </div>
         </div>
       `,
