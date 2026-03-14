@@ -17,7 +17,8 @@ export function initCompass(map: Map): void {
   let ticks = '';
   uniqueSteps.forEach((deg) => {
     const isCenter = deg === 0;
-    const rad = (deg * Math.PI) / 180;
+    const tickDeg = -deg; // Invert: needle points to -bearing on compass
+    const rad = (tickDeg * Math.PI) / 180;
     const outerR = 23;
     const len = isCenter ? 3.5 : 2.5;
     const innerR = outerR - len;
