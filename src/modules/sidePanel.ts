@@ -5,6 +5,7 @@ import { getFilteredLocations, getUniqueCategories } from './searchPanel.js';
 import { state } from './state.js';
 
 let panelElement: HTMLElement | null = null;
+let mobileSearchElement: HTMLElement | null = null;
 
 function formatCategory(cat: string): string {
   const s = cat.replace(/_/g, ' ').toLowerCase();
@@ -73,6 +74,159 @@ const icons = {
   navigate: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>`,
   category: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>`,
 };
+
+const searchBarHTML = `
+  <div class="sp-search-bar">
+    <svg class="sp-search-bar__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input class="sp-search-bar__input" type="text" placeholder="Zoek een winkel..." />
+    <button class="sp-search-bar__clear" aria-label="Sluiten" style="display:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+  <div class="sp-search-dropdown" style="display:none;"></div>
+`;
+
+function setupSearch(container: HTMLElement): void {
+  const searchInput = container.querySelector('.sp-search-bar__input') as HTMLInputElement;
+  const clearBtn = container.querySelector('.sp-search-bar__clear') as HTMLElement;
+  const dropdown = container.querySelector('.sp-search-dropdown') as HTMLElement;
+
+  if (!searchInput || !dropdown) return;
+
+  const activeCategories = new Set<string>();
+
+  const renderDropdown = () => {
+    const query = searchInput.value;
+    const categories = getUniqueCategories();
+
+    let chipsContainer = dropdown.querySelector('.sp-search-chips') as HTMLElement;
+    if (!chipsContainer) {
+      const chips = categories.map((cat) => {
+        const active = activeCategories.has(cat.name);
+        return `<button class="sp-search-chip ${active ? 'is-active' : ''}" data-cat="${cat.name}" style="--cat-color: ${cat.color};">
+          <span class="sp-search-chip__marker" style="background-color: ${cat.color};">
+            ${cat.icon ? `<img src="${cat.icon}" alt="" />` : ''}
+          </span>
+          ${formatCategory(cat.name)}
+        </button>`;
+      }).join('');
+
+      dropdown.innerHTML = `
+        <div class="sp-search-chips">${chips}</div>
+        <div class="sp-search-results"></div>
+      `;
+      chipsContainer = dropdown.querySelector('.sp-search-chips') as HTMLElement;
+
+      chipsContainer.querySelectorAll('.sp-search-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          const cat = chip.getAttribute('data-cat')!;
+          if (activeCategories.has(cat)) {
+            activeCategories.delete(cat);
+            chip.classList.remove('is-active');
+          } else {
+            activeCategories.add(cat);
+            chip.classList.add('is-active');
+          }
+          updateResults();
+        });
+      });
+    }
+
+    updateResults();
+  };
+
+  const updateResults = () => {
+    const query = searchInput.value;
+    const locations = getFilteredLocations(query, activeCategories);
+    const resultsContainer = dropdown.querySelector('.sp-search-results') as HTMLElement;
+    if (!resultsContainer) return;
+
+    const results = locations.slice(0, 10).map((f: any) => {
+      const p = f.properties;
+      const c = p.color || '#6B46C1';
+      return `<button class="sp-search-result" data-name="${p.name}">
+        <div class="sp-search-result__icon" style="background-color: ${c};">
+          ${p.icon ? `<img src="${p.icon}" alt="" />` : `<span>${p.name.charAt(0)}</span>`}
+        </div>
+        <div class="sp-search-result__info">
+          <span class="sp-search-result__name">${p.name}</span>
+          <span class="sp-search-result__cat">${p.category ? formatCategory(p.category) : ''}</span>
+        </div>
+      </button>`;
+    }).join('');
+
+    resultsContainer.innerHTML = results || '<div class="sp-search-empty">Geen winkels gevonden</div>';
+
+    resultsContainer.querySelectorAll('.sp-search-result').forEach((item) => {
+      item.addEventListener('click', () => {
+        const name = item.getAttribute('data-name');
+        const feature = state.mapLocations.features.find(
+          (f: any) => f.properties.name === name
+        );
+        if (feature) {
+          const map = (window as any).map;
+          if (map) createPopup(feature, map);
+          openSidePanel(feature.properties, feature.geometry.coordinates as [number, number]);
+        }
+        closeDropdown();
+      });
+    });
+  };
+
+  const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
+
+  const openDropdown = () => {
+    dropdown.style.display = 'block';
+    clearBtn.style.display = 'flex';
+    if (isMobile() && panelElement) {
+      panelElement.classList.remove('is-open');
+    }
+    renderDropdown();
+  };
+
+  const closeDropdown = () => {
+    dropdown.style.display = 'none';
+    dropdown.innerHTML = '';
+    clearBtn.style.display = 'none';
+    searchInput.value = '';
+    searchInput.blur();
+    activeCategories.clear();
+  };
+
+  searchInput.addEventListener('focus', openDropdown);
+  searchInput.addEventListener('input', updateResults);
+  clearBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeDropdown();
+  });
+
+  document.addEventListener('mousedown', (e) => {
+    if (dropdown.style.display === 'none') return;
+    const target = e.target as Node;
+    const searchBar = container.querySelector('.sp-search-bar') as Node;
+    if (searchBar && searchBar.contains(target)) return;
+    if (dropdown.contains(target)) return;
+    closeDropdown();
+  });
+}
+
+function setupMobileSearchBar(): void {
+  if (mobileSearchElement) return; // Already created
+  if (!window.matchMedia('(max-width: 767px)').matches) return;
+
+  mobileSearchElement = document.createElement('div');
+  mobileSearchElement.className = 'mobile-search';
+  mobileSearchElement.innerHTML = searchBarHTML;
+  document.body.appendChild(mobileSearchElement);
+
+  setupSearch(mobileSearchElement);
+}
 
 export function openSidePanel(properties: any, coordinates?: [number, number]): void {
   if (!panelElement) {
@@ -193,6 +347,7 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       <img class="sp-hero__img" src="${properties.image}" alt="${properties.name}" />
       <div class="sp-hero__overlay" style="background-color: ${color};"></div>
       ${socialIcons ? `<div class="sp-socials">${socialIcons}</div>` : ''}
+      ${properties.logo_wb ? `<img class="sp-hero__logo" src="${properties.logo_wb}" alt="${properties.name}" />` : ''}
       <div class="sp-search-bar">
         <svg class="sp-search-bar__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
@@ -220,6 +375,7 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 
   // Force reflow before adding active class
   panelElement.offsetHeight;
+  panelElement.classList.remove('is-peeking');
   panelElement.classList.add('is-open');
 
   // Toggle button
@@ -232,128 +388,11 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     }
   });
 
-  // Integrated search
-  const searchInput = panelElement.querySelector('.sp-search-bar__input') as HTMLInputElement;
-  const clearBtn = panelElement.querySelector('.sp-search-bar__clear') as HTMLElement;
-  const dropdown = panelElement.querySelector('.sp-search-dropdown') as HTMLElement;
+  // Integrated search — setup for both desktop (in hero) and mobile (fixed top)
+  setupSearch(panelElement);
 
-  if (searchInput && dropdown) {
-    const activeCategories = new Set<string>();
-
-    const renderDropdown = () => {
-      const query = searchInput.value;
-      const locations = getFilteredLocations(query, activeCategories);
-      const categories = getUniqueCategories();
-
-      // Only build chips once
-      let chipsContainer = dropdown.querySelector('.sp-search-chips') as HTMLElement;
-      if (!chipsContainer) {
-        const chips = categories.map((cat) => {
-          const active = activeCategories.has(cat.name);
-          return `<button class="sp-search-chip ${active ? 'is-active' : ''}" data-cat="${cat.name}" style="--cat-color: ${cat.color};">
-            <span class="sp-search-chip__marker" style="background-color: ${cat.color};">
-              ${cat.icon ? `<img src="${cat.icon}" alt="" />` : ''}
-            </span>
-            ${formatCategory(cat.name)}
-          </button>`;
-        }).join('');
-
-        dropdown.innerHTML = `
-          <div class="sp-search-chips">${chips}</div>
-          <div class="sp-search-results"></div>
-        `;
-        chipsContainer = dropdown.querySelector('.sp-search-chips') as HTMLElement;
-
-        // Chip click handlers (only once)
-        chipsContainer.querySelectorAll('.sp-search-chip').forEach((chip) => {
-          chip.addEventListener('click', () => {
-            const cat = chip.getAttribute('data-cat')!;
-            if (activeCategories.has(cat)) {
-              activeCategories.delete(cat);
-              chip.classList.remove('is-active');
-            } else {
-              activeCategories.add(cat);
-              chip.classList.add('is-active');
-            }
-            updateResults();
-          });
-        });
-      }
-
-      updateResults();
-    };
-
-    const updateResults = () => {
-      const query = searchInput.value;
-      const locations = getFilteredLocations(query, activeCategories);
-      const resultsContainer = dropdown.querySelector('.sp-search-results') as HTMLElement;
-      if (!resultsContainer) return;
-
-      const results = locations.slice(0, 10).map((f: any) => {
-        const p = f.properties;
-        const c = p.color || '#6B46C1';
-        return `<button class="sp-search-result" data-name="${p.name}">
-          <div class="sp-search-result__icon" style="background-color: ${c};">
-            ${p.icon ? `<img src="${p.icon}" alt="" />` : `<span>${p.name.charAt(0)}</span>`}
-          </div>
-          <div class="sp-search-result__info">
-            <span class="sp-search-result__name">${p.name}</span>
-            <span class="sp-search-result__cat">${p.category ? formatCategory(p.category) : ''}</span>
-          </div>
-        </button>`;
-      }).join('');
-
-      resultsContainer.innerHTML = results || '<div class="sp-search-empty">Geen winkels gevonden</div>';
-
-      // Result click handlers
-      resultsContainer.querySelectorAll('.sp-search-result').forEach((item) => {
-        item.addEventListener('click', () => {
-          const name = item.getAttribute('data-name');
-          const feature = state.mapLocations.features.find(
-            (f: any) => f.properties.name === name
-          );
-          if (feature) {
-            const map = (window as any).map;
-            if (map) createPopup(feature, map);
-            openSidePanel(feature.properties, feature.geometry.coordinates as [number, number]);
-          }
-          closeDropdown();
-        });
-      });
-    };
-
-    const openDropdown = () => {
-      dropdown.style.display = 'block';
-      clearBtn.style.display = 'flex';
-      renderDropdown();
-    };
-
-    const closeDropdown = () => {
-      dropdown.style.display = 'none';
-      dropdown.innerHTML = '';
-      clearBtn.style.display = 'none';
-      searchInput.value = '';
-      searchInput.blur();
-      activeCategories.clear();
-    };
-
-    searchInput.addEventListener('focus', openDropdown);
-    searchInput.addEventListener('input', updateResults);
-    clearBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeDropdown();
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener('mousedown', (e) => {
-      if (dropdown.style.display === 'none') return;
-      const target = e.target as Node;
-      const searchBar = panelElement?.querySelector('.sp-search-bar') as Node;
-      if (searchBar && searchBar.contains(target)) return;
-      if (dropdown.contains(target)) return;
-      closeDropdown();
-    });
-  }
+  // Create mobile search bar (fixed at top of screen)
+  setupMobileSearchBar();
 
   // Mobile swipe-down to close
   const dragHandle = panelElement.querySelector('.sp-drag-handle') as HTMLElement;
@@ -460,5 +499,31 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 export function closeSidePanel(): void {
   if (panelElement) {
     panelElement.classList.remove('is-open');
+    panelElement.classList.remove('is-peeking');
   }
+}
+
+/**
+ * Setup mobile peek behavior:
+ * - Touching the map → panel peeks down (more map visible)
+ * - Touching the panel → panel comes back up
+ */
+export function setupMobilePeek(map: any): void {
+  const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
+
+  // When user interacts with the map, peek the panel down
+  map.on('touchstart', () => {
+    if (!isMobile() || !panelElement) return;
+    if (panelElement.classList.contains('is-open') && !panelElement.classList.contains('is-peeking')) {
+      panelElement.classList.add('is-peeking');
+    }
+  });
+
+  // When user touches the panel, bring it back up
+  document.addEventListener('touchstart', (e) => {
+    if (!isMobile() || !panelElement) return;
+    if (panelElement.contains(e.target as Node) && panelElement.classList.contains('is-peeking')) {
+      panelElement.classList.remove('is-peeking');
+    }
+  });
 }

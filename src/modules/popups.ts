@@ -33,7 +33,7 @@ export async function createPopup(location: any, map: Map): Promise<Popup> {
   // Desktop (≥992px): larger popup due to fluid scaling, larger offset
   let offset: [number, number];
   if (window.matchMedia('(max-width: 479px)').matches) {
-    offset = [0, -100]; // Small screens - push marker higher on screen
+    offset = [0, -(window.innerHeight / 8)]; // Mobile - center marker in visible area above panel
   } else if (window.matchMedia('(max-width: 991px)').matches) {
     offset = [0, 220]; // Medium screens - more centered
   } else {

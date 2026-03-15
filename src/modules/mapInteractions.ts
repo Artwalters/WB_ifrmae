@@ -7,6 +7,7 @@ import { applyMapFilters } from './filters.js';
 import { setupLocationFilters } from './filters.js';
 import { addMarkers, loadIcons } from './markers.js';
 import { closeItem } from './popups.js';
+import { setupMobilePeek } from './sidePanel.js';
 import { setActivePopup, state } from './state.js';
 
 // Global declaration for jQuery
@@ -119,6 +120,9 @@ export function setupMapLoadHandler(map: Map): void {
         // Handle marker loading error gracefully
         setupLocationFilters();
       });
+
+    // Setup mobile peek behavior
+    setupMobilePeek(map);
 
     // Initial animation on load - Woonboulevard
     const finalZoom = window.matchMedia('(max-width: 479px)').matches ? 16.5 : 17;
