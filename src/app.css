@@ -306,7 +306,7 @@ html {
 .popup-side {
   position: relative;
   width: 16rem;
-  height: 11rem;
+  height: auto;
   color: #222;
   display: flex;
   flex-direction: column;
@@ -361,13 +361,17 @@ html {
 }
 
 .popup-logo {
-  max-width: 70%;
-  max-height: 60%;
+  width: calc(100% + 4px);
+  height: auto;
   object-fit: contain;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  display: block;
+  margin: -2px;
+}
+
+.popup-logo--parking {
+  width: 25%;
+  margin: 1.5rem auto;
+  display: block;
 }
 
 .popup-color-overlay {
@@ -640,7 +644,7 @@ margin-top: 1rem;
 @media screen and (max-width: 767px) {
   .popup-side {
     width: 13rem;
-    height: 9.5rem;
+    height: auto;
   }
 
   .popup-side.ar {

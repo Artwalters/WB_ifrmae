@@ -369,13 +369,14 @@ ${createARButton(properties, 'impressie-button button-base')}
     };
   }
   // Regular location popup
+  const isParking = properties.category?.toLowerCase() === 'parking';
   return {
     styles,
     html: `
         <div class="popup-wrapper">
-          <button class="close-button" aria-label="${t.aria.closePopup}"></button>
-          <div class="popup-side popup-front">
-            ${properties.logo_wb ? `<img class="popup-logo" src="${properties.logo_wb}" alt="${properties.name}" />` : ''}
+          <button class="close-button" style="background: ${properties.color || '#4CAF50'};" aria-label="${t.aria.closePopup}"></button>
+          <div class="popup-side popup-front" style="${isParking ? `background-color: ${properties.color || '#0066CC'};` : ''}">
+            ${properties.logo_wb ? `<img class="popup-logo${isParking ? ' popup-logo--parking' : ''}" src="${properties.logo_wb}" alt="${properties.name}" />` : (isParking ? `<div style="padding: 1.5rem; text-align: center; color: white; font-weight: 600;">${properties.name}</div>` : '')}
           </div>
         </div>
       `,

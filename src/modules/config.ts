@@ -37,9 +37,6 @@ export const MAPBOX_ACCESS_TOKEN: string =
 // Map style
 export const MAP_STYLE: string = 'mapbox://styles/projectheerlen/cmi7ahq4700cv01se4sgxfh6p';
 
-// Local storage key
-export const LOCAL_STORAGE_KEY: string = 'heerlenActiveFilters';
-
 // Map options
 export const MAP_OPTIONS: MapboxOptions = {
   container: 'map',

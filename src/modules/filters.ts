@@ -1,7 +1,6 @@
 // Filter management module
 
 import type { Map } from 'mapbox-gl';
-import { saveMapFiltersToLocalStorage } from './localStorage.js';
 import { state, stateManager } from './state.js';
 
 // Performance optimization caches
@@ -21,20 +20,8 @@ export function applyMapFilters(): void {
   // Get current active filters from state
   const currentFilters = state.activeFilters;
   
-  let filterExpression: any[] | null;
-
-  if (!currentFilters || currentFilters.size === 0) {
-    // No filter - show everything
-    filterExpression = null;
-  } else {
-    // Combine active filters WITH markers without category
-    filterExpression = [
-      'any', // OR condition
-      ['in', ['get', 'category'], ['literal', Array.from(currentFilters)]], // Markers with active categories
-      ['!', ['has', 'category']], // Markers without category property
-      ['==', ['get', 'category'], ''], // Markers with empty category
-    ];
-  }
+  // Always show all markers regardless of active filters
+  const filterExpression: any[] | null = null;
 
   // Apply filter to all marker-related layers (if loaded)
   const layersToFilter = ['location-markers', 'location-icons', 'location-labels'];
@@ -48,8 +35,6 @@ export function applyMapFilters(): void {
     }
   });
 
-  // Save filters to localStorage
-  saveMapFiltersToLocalStorage();
 }
 
 /**
@@ -162,5 +147,3 @@ export function setFilters(categories: string[]): void {
   applyMapFilters();
 }
 
-// Make applyMapFilters available globally for localStorage module
-(window as any).applyMapFilters = applyMapFilters;

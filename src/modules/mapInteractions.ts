@@ -5,7 +5,6 @@ import type { Map } from 'mapbox-gl';
 import { CONFIG } from './config.js';
 import { applyMapFilters } from './filters.js';
 import { setupLocationFilters } from './filters.js';
-import { loadFiltersAndUpdateMap } from './localStorage.js';
 import { addMarkers, loadIcons } from './markers.js';
 import { closeItem } from './popups.js';
 import { setActivePopup, state } from './state.js';
@@ -25,8 +24,6 @@ const { $ } = window;
  */
 export function setupMapLoadHandler(map: Map): void {
   map.on('load', () => {
-    loadFiltersAndUpdateMap();
-
     // Add 3D buildings layer with clip layer to exclude Woonboulevard area
     map.once('idle', () => {
       // Find the first symbol layer (labels) to insert buildings below
