@@ -216,7 +216,7 @@ function setupSearch(container: HTMLElement): void {
   });
 }
 
-function setupMobileSearchBar(): void {
+export function setupMobileSearchBar(): void {
   if (mobileSearchElement) return; // Already created
   if (!window.matchMedia('(max-width: 767px)').matches) return;
 
@@ -373,10 +373,19 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     </div>
   `;
 
+  // Move compass inside panel on mobile so it animates with panel
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    const compass = document.querySelector('.map-compass') as HTMLElement;
+    if (compass && !panelElement.contains(compass)) {
+      panelElement.appendChild(compass);
+    }
+  }
+
   // Force reflow before adding active class
   panelElement.offsetHeight;
   panelElement.classList.remove('is-peeking');
   panelElement.classList.add('is-open');
+  updateCompassSize(false);
 
   // Toggle button
   const toggleBtn = panelElement.querySelector('.sp-toggle') as HTMLElement;
@@ -508,6 +517,16 @@ export function closeSidePanel(): void {
  * - Touching the map → panel peeks down (more map visible)
  * - Touching the panel → panel comes back up
  */
+function updateCompassSize(peeking: boolean): void {
+  const compass = document.querySelector('.map-compass');
+  if (!compass) return;
+  if (peeking) {
+    compass.classList.remove('is-compact');
+  } else {
+    compass.classList.add('is-compact');
+  }
+}
+
 export function setupMobilePeek(map: any): void {
   const isMobile = () => window.matchMedia('(max-width: 767px)').matches;
 
@@ -516,6 +535,7 @@ export function setupMobilePeek(map: any): void {
     if (!isMobile() || !panelElement) return;
     if (panelElement.classList.contains('is-open') && !panelElement.classList.contains('is-peeking')) {
       panelElement.classList.add('is-peeking');
+      updateCompassSize(true);
     }
   });
 
@@ -524,6 +544,7 @@ export function setupMobilePeek(map: any): void {
     if (!isMobile() || !panelElement) return;
     if (panelElement.contains(e.target as Node) && panelElement.classList.contains('is-peeking')) {
       panelElement.classList.remove('is-peeking');
+      updateCompassSize(false);
     }
   });
 }

@@ -1,36 +1,68 @@
 /*
  * Mapbox Interactive Application CSS
- * A comprehensive stylesheet for a map-based application
- * with custom markers, popups, and guided tours
+ * Heerlen Doen - Map-based application
  */
+
+/* ==============================
+ * DESIGN TOKENS & VARIABLES
+ * ============================== */
+
+:root {
+  /* Z-index layers */
+  --z-map: 1;
+  --z-controls: 100;
+  --z-popups: 200;
+  --z-modals: 300;
+  --z-notifications: 400;
+
+  /* Typography scale (em-based, relative to parent) */
+  --font-xs: 0.65em;
+  --font-sm: 0.75em;
+  --font-base: 0.88em;
+  --font-md: 1.05em;
+  --font-lg: 1.3em;
+  --font-xl: 1.6em;
+  --font-2xl: 2.1em;
+  --font-3xl: 2.4em;
+
+  /* Font families */
+  --font-display: "social-gothic", Montserrat, sans-serif;
+  --font-body: Montserrat, sans-serif;
+
+  /* Colors */
+  --color-text: #222;
+  --color-text-light: #444;
+  --color-text-muted: #666;
+  --color-text-subtle: #999;
+  --color-bg: #fafafa;
+  --color-bg-white: #fff;
+  --color-border: rgba(0, 0, 0, 0.06);
+  --color-shadow: rgba(0, 0, 0, 0.12);
+}
 
 /* ==============================
  * FLUID RESPONSIVE BASE
  * ============================== */
 
-Fluid base font-size: 14px op mobile → ~18.67px op desktop (1.33x scaling)
 html {
   font-size: clamp(14px, 1.2vw + 0.5rem, 18.67px);
 }
 
-/* Reset voor popup - gebruik de root font-size als basis */
 .mapboxgl-popup-content {
-  font-size: 1rem; /* Zal fluid meeschalen met root */
+  font-size: 1em;
 }
 
 /* ==============================
  * CORE LAYOUT & INTERACTION
  * ============================== */
 
-/* Prevent scrolling on main container */
 .page-wrapper {
   touch-action: none;
   overflow: hidden;
   position: relative;
 }
 
-/* Interaction controls */
-.threebox-canvas, 
+.threebox-canvas,
 .threebox-container {
   pointer-events: none !important;
   touch-action: none !important;
@@ -38,15 +70,6 @@ html {
 
 .mapboxgl-canvas {
   pointer-events: auto !important;
-}
-
-/* Z-index Management */
-:root {
-  --z-map: 1;
-  --z-controls: 100;
-  --z-popups: 200;
-  --z-modals: 300;
-  --z-notifications: 400;
 }
 
 .mapboxgl-map {
@@ -62,177 +85,91 @@ html {
 }
 
 /* ==============================
- * MAPBOX CONTROLS & BRANDING 
+ * MAPBOX CONTROLS & BRANDING
  * ============================== */
 
-/* Hide Mapbox branding */
 .mapboxgl-ctrl-logo,
 .mapboxgl-ctrl-attrib {
   display: none !important;
 }
 
-/* Control positioning */
-.mapboxgl-ctrl-top-right .mapboxgl-ctrl {
-  float: right !important;
-  margin-right: 0 !important;
+.mapboxgl-ctrl-bottom-right {
+  bottom: 0;
+  right: 0;
 }
 
-.mapboxgl-ctrl-bottom-right .mapboxgl-ctrl {
-  float: right;
-  margin: 0 !important;
-}
-
-/* Hide zoom controls */
-.mapboxgl-ctrl-top-right .mapboxgl-ctrl-zoom {
-  display: none !important;
-}
-
-/* Control group styling with enhanced frosted glass effect */
 .mapboxgl-ctrl-group {
-  background: white!important;
-  border: 1.5px solid black !important;
-  border-radius: 0.375rem !important; /* 6px - iets scherper op desktop */
-  position: relative;
+  border-radius: 0.375em !important;
+  box-shadow: 0 0.125em 0.375em rgba(0, 0, 0, 0.15) !important;
   overflow: hidden;
 }
 
-/* Adding texture to frosted glass */
-.mapboxgl-ctrl-group::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-  opacity: 0.3;
-  z-index: -1;
-  mix-blend-mode: overlay;
-}
-
-/* Glass effect for buttons inside control group */
 .mapboxgl-ctrl-group button {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: none !important;
-  border: none;
-  color: #333;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.25rem !important; /* 4px - iets scherper op desktop */
+  width: 1.625em !important;
+  height: 1.625em !important;
+  border-radius: 0.25em !important;
 }
 
-.mapboxgl-ctrl-group:not(:empty) {
-  box-shadow: none !important;
-}
-
-.mapboxgl-ctrl-group button::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(125deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 40%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.mapboxgl-ctrl-group button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
-}
-
-/* Button spacing */
-.mapboxgl-ctrl-help,
-.mapboxgl-ctrl-top-right .mapboxgl-ctrl:not(.mapboxgl-ctrl-group) {
-  margin: 0 0 10px 0 !important;
-}
-
-/* Control positioning */
-.mapboxgl-ctrl-top-right {
-  margin-top: 10em;
-  margin-right: 1rem;
+.mapboxgl-ctrl-icon {
+  background-size: 1.25em !important;
 }
 
 .mapboxgl-ctrl-bottom-right {
-  margin-bottom: 3rem !important;
-  margin-right: 1rem;
+  margin-right: 1em;
+  margin-bottom: 0.75em;
 }
- 
 
-/* Responsive adjustments for controls */
 @media screen and (min-width: 1771px) {
-  .mapboxgl-ctrl-top-right {
-    margin-top: 11em;
-    margin-right: 1.5rem;
+  .mapboxgl-ctrl-bottom-right {
+    margin-right: 1.5em;
   }
 }
 
 @media screen and (min-width: 2560px) {
-  .mapboxgl-ctrl-top-right {
-    margin-top: 11em;
-    margin-right: 2.5rem;
+  .mapboxgl-ctrl-bottom-right {
+    margin-right: 2.5em;
   }
 }
 
 @media screen and (max-width: 991px) {
-  .mapboxgl-ctrl-top-right,
   .mapboxgl-ctrl-bottom-right {
-    margin-right: 1rem;
+    margin-right: 1em;
   }
 }
 
 @media screen and (max-width: 767px) {
-  .mapboxgl-ctrl-top-right {
-    margin-right: 1rem;
-    margin-top: 5rem;
-  }
-  .mapboxgl-ctrl-bottom-right{
-    margin-right: 1.5rem;
-    margin-bottom: 2rem;
+  .mapboxgl-ctrl-bottom-right {
+    margin-right: 1em;
+    margin-top: 5em;
   }
 }
-
 
 @media screen and (max-width: 480px) {
-  .mapboxgl-ctrl-top-right {
-    margin-right: 0.5rem;
-    margin-top: 8rem;
+  .mapboxgl-ctrl-bottom-right {
+    margin-right: 0.5em;
+    margin-top: 8em;
   }
-  .mapboxgl-ctrl-bottom-right{
-    margin-right: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
+  .mapboxgl-ctrl-bottom-right {
+    margin-right: 0.5em !important;
+    margin-bottom: 0.5em !important;
   }
-
-  /* Control buttons nog kleiner op zeer kleine schermen */
   .mapboxgl-ctrl-group button {
-    width: 1.25rem !important; /* 20px */
-    height: 1.25rem !important; /* 20px */
-    border-radius: 0.1875rem !important; /* 3px - vierkant met kleine afronding */
+    width: 1.25em !important;
+    height: 1.25em !important;
+    border-radius: 0.1875em !important;
   }
-
   .mapboxgl-ctrl-group {
-    border-radius: 0.25rem !important; /* 4px - iets scherper */
+    border-radius: 0.25em !important;
   }
-
   .mapboxgl-ctrl-icon {
-    background-size: 1.125rem !important; /* 18px - icons groter */
+    background-size: 1.125em !important;
   }
 }
+
 /* ==============================
- * MARKERS & RADIUS INDICATORS
+ * MARKERS & SIDEBAR ITEMS
  * ============================== */
 
-.marker-wrapper {
-  position: relative;
-}
-
-.custom-marker {
-  cursor: pointer;
-}
-
-/* Marker animation and transitions */
 .locations-map_item {
   pointer-events: none;
   position: absolute;
@@ -249,22 +186,15 @@ html {
   visibility: visible;
 }
 
-.locations-map_item.is--hiding {
-  opacity: 0;
-  transform: translateY(40px) scale(0.6);
-  pointer-events: none;
-}
-
-/* Hide popup tips */
 .mapboxgl-popup-tip {
   display: none;
 }
 
-/* Styling voor uitgeschakelde AR knoppen */
+/* Disabled AR buttons */
 .button-base.disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background: rgba(200,200,200,0.2);
+  background: rgba(200, 200, 200, 0.2);
 }
 
 .mobile-only {
@@ -278,7 +208,7 @@ html {
 
 .mapboxgl-popup-content {
   padding: 0 !important;
-  border-radius: 1.25rem !important;
+  border-radius: 1.25em !important;
   overflow: visible !important;
   width: auto !important;
   background: transparent !important;
@@ -300,14 +230,14 @@ html {
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 10px solid #ffffff;
+  border-top: 10px solid var(--color-bg-white);
 }
 
 .popup-side {
   position: relative;
-  width: 16rem;
+  width: 32em;
   height: auto;
-  color: #222;
+  color: var(--color-text);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -324,42 +254,6 @@ html {
   z-index: 2;
 }
 
-.popup-socials {
-  position: absolute;
-  top: 0.6em;
-  right: 0.6em;
-  display: flex;
-  gap: 0.4em;
-  z-index: 5;
-}
-
-.popup-social-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.8em;
-  height: 1.8em;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.06);
-  color: #555;
-  transition: background 0.2s ease;
-  text-decoration: none;
-}
-
-.popup-social-icon:hover {
-  background: rgba(0, 0, 0, 0.12);
-}
-
-/* Popup typography */
-.popup-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .popup-logo {
   width: calc(100% + 4px);
   height: auto;
@@ -370,31 +264,12 @@ html {
 
 .popup-logo--parking {
   width: 25%;
-  margin: 1.5rem auto;
+  margin: 1.5em auto;
   display: block;
 }
 
-.popup-color-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  opacity: 0.45;
-  z-index: 1;
-}
-
-.popup-image-fade {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60%;
-  pointer-events: none;
-}
-
 .popup-title {
-  font-family: "social-gothic", Montserrat, sans-serif;
+  font-family: var(--font-display);
   font-size: 1.8em;
   font-weight: 400;
   line-height: 1.1;
@@ -406,8 +281,8 @@ html {
 }
 
 .popup-title.details {
-  font-family: "social-gothic", Montserrat, sans-serif;
-  font-size: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.2em;
   font-weight: 600;
   text-align: center;
   margin-top: 0;
@@ -415,19 +290,7 @@ html {
   text-transform: none;
 }
 
-.popup-background-image {
-  object-fit: cover;
-  object-position: center;
-  width: 100%;
-  height: 37%;
-  position: absolute;
-  top: 0%;
-  left: 50%;
-  transform: translate(-50%, 0%);
-  z-index: -2;
-}
-
-/* Popup description wrapper - relative container for fades */
+/* Popup description */
 .popup-description-wrapper {
   position: relative;
   margin-bottom: 3.5em;
@@ -436,24 +299,25 @@ html {
   max-height: 10em;
 }
 
-/* Popup description */
 .popup-description {
-  font-family: Montserrat, sans-serif;
-  font-size: 0.85rem;
+  font-family: var(--font-body);
+  font-size: var(--font-base);
   line-height: 1.5;
   height: 100%;
   overflow-y: scroll;
   text-align: center;
   color: #333;
-  padding-right: 0.9375rem; /* was 15px */
-  margin-right: -0.9375rem; /* was -15px */
+  padding-right: 0.9375em;
+  margin-right: -0.9375em;
   -webkit-overflow-scrolling: touch;
   pointer-events: auto !important;
   user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   cursor: grab;
+}
+
+.popup-description:active {
+  cursor: grabbing;
 }
 
 .gradient-bottom {
@@ -467,61 +331,66 @@ html {
   z-index: 2;
 }
 
-.popup-description-ar {
-  font-family: Montserrat, sans-serif;
-  font-size: 0.875rem; /* was 14px */
-  margin-bottom: 5em;
-  margin-top: 1em;
-  text-align: center;
-  color: white;
+/* Popup description scrollbar */
+.popup-description::-webkit-scrollbar {
+  width: 0.3125em;
+  background-color: transparent;
 }
 
- /* Specifieke tekststijlen voor AR popup */
- .popup-side.ar .popup-title {
-  color: #000000;
+.popup-description::-webkit-scrollbar-thumb {
+  border-radius: 0.625em;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.popup-description::-webkit-scrollbar-track {
+  border-radius: 0.625em;
+  background-color: transparent;
+}
+
+/* Fade overlays */
+.fade-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3.5em;
+  background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.fade-top {
+  position: absolute;
+  top: -0.5em;
+  left: 0;
+  right: 0;
+  height: 3.5em;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* AR popup styles */
+.popup-side.ar {
+  color: #000;
+}
+
+.popup-side.ar .popup-title {
+  color: #000;
 }
 
 .popup-side.ar .popup-description {
-  color: #000000;
+  color: #000;
 }
 
-/* Knoppen in AR popup */
 .popup-side.ar .button-base {
   color: #fff;
   background-color: #470632;
 }
 
-/* Styling voor AR popup */
-.popup-side.ar {
-  color: #000000;
-}
-
-.popup-description:active {
-  cursor: grabbing;
-}
-
-p {
-  color: #333;
-  font-family: Montserrat, sans-serif;
-  font-size: 0.875rem; /* was 14px */
-  line-height: 1.5;
-}
-
-/* Scrollbar styling for popup description */
-.popup-description::-webkit-scrollbar {
-  width: 0.3125rem; /* was 5px */
-  background-color: transparent;
-}
-
-.popup-description::-webkit-scrollbar-thumb {
-  border-radius: 0.625rem; /* was 10px */
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.popup-description::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.4);
-  border-radius: 0.625rem; /* was 10px */
-  background-color: transparent;
+.popup-ar-instructie {
+  color: black;
+  margin-top: 1em;
 }
 
 /* ==============================
@@ -530,15 +399,15 @@ p {
 
 .button-base {
   position: absolute;
-  background-color: #ffffff;
+  background-color: var(--color-bg-white);
   border: none;
   color: #333;
-  padding: 0.5rem 1.2rem;
-  border-radius: 2rem;
+  padding: 0.5em 1.2em;
+  border-radius: 2em;
   cursor: pointer;
-  font-family: "Montserrat", sans-serif;
+  font-family: var(--font-body);
   font-weight: 500;
-  font-size: 0.75rem;
+  font-size: var(--font-sm);
   transition: all 0.3s ease;
   z-index: 10;
   text-decoration: none;
@@ -556,43 +425,27 @@ p {
   background-color: #f0f0f0;
 }
 
-
 .impressie-button,
 .navigate-button {
-  bottom: 1.5rem; /* Compacter */
-  right: 1.5rem;
+  bottom: 1.5em;
+  right: 1.5em;
 }
 
-.popup-buttons {
-  position: absolute;
-  bottom: 1rem;
-  left: 1rem;
-  right: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  z-index: 2;
-}
-
-.popup-buttons .button-base {
-  position: static;
-  flex: 1;
-}
-
-.more-info-button,
-.terug-button {
+.more-info-button {
   position: static;
 }
 
+/* Close button */
 .close-button {
   position: absolute;
-  top: 0.4rem;
-  right: 0.4rem;
+  top: 0.4em;
+  right: 0.4em;
   left: auto;
   transform: none;
   background: #4CAF50;
   border-radius: 50%;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 1.8em;
+  height: 1.8em;
   cursor: pointer;
   z-index: 20;
   padding: 0;
@@ -609,20 +462,18 @@ p {
   transform: rotate(90deg) scale(1.1);
 }
 
-/* X for close button */
 .close-button::before,
 .close-button::after {
   content: '';
   position: absolute;
   background-color: white;
-  width: 0.75rem; /* was 12px */
-  height: 0.125rem; /* was 2px */
-  border-radius: 0.9375rem; /* was 15px */
+  width: 0.75em;
+  height: 0.125em;
+  border-radius: 0.9375em;
   transition: transform 0.3s ease;
   top: 50%;
   left: 50%;
 }
-
 
 .close-button::before {
   transform: translate(-50%, -50%) rotate(45deg);
@@ -632,75 +483,70 @@ p {
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-.popup-ar-instructie{
-color: black;
-margin-top: 1rem;
+/* AR close button */
+.close-button.ar {
+  background: #fff200;
+}
+
+.close-button.ar::before,
+.close-button.ar::after {
+  background-color: #000;
 }
 
 /* ==============================
- * MOBILE ADAPTATIONS
+ * MOBILE POPUP ADAPTATIONS
  * ============================== */
 
 @media screen and (max-width: 767px) {
   .popup-side {
-    width: 13rem;
+    width: 13em;
     height: auto;
   }
 
   .popup-side.ar {
-    width: 13rem;
+    width: 13em;
     height: auto;
   }
 
-  .popup-buttons {
-    display: none;
-  }
-
   .content-wrapper {
-    padding: 0.75rem 1rem;
+    padding: 0.75em 1em;
   }
 
-  /* Control buttons kleiner op mobile */
   .mapboxgl-ctrl-group button {
-    width: 1.625rem !important;
-    height: 1.625rem !important;
-    border-radius: 0.1875rem !important;
+    width: 1.625em !important;
+    height: 1.625em !important;
+    border-radius: 0.1875em !important;
   }
 
   .mapboxgl-ctrl-group {
-    border-radius: 0.3125rem !important;
+    border-radius: 0.3125em !important;
   }
 
   .mapboxgl-ctrl-icon {
-    background-size: 1.5rem !important;
+    background-size: 1.5em !important;
   }
 }
 
-
 /* ==============================
  * SIDE PANEL
  * ============================== */
 
-/* ==============================
- * SIDE PANEL
- * ============================== */
-/* ─── Side Panel ─── */
 .side-panel {
   position: fixed;
   top: 1em;
   left: 1em;
   width: 30em;
   height: calc(100vh - 2em);
-  background: #fafafa;
+  background: var(--color-bg);
   z-index: 1000;
   transform: translateX(calc(-100% - 1em));
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   flex-direction: column;
   box-shadow:
-    0 1.5em 4em rgba(0, 0, 0, 0.12),
+    0 1.5em 4em var(--color-shadow),
     0 0.4em 1em rgba(0, 0, 0, 0.06);
-  font-family: Montserrat, sans-serif;
+  font-family: var(--font-body);
   font-size: 1.265em;
   border-radius: 1.2em;
   overflow: visible;
@@ -717,7 +563,7 @@ margin-top: 1rem;
   padding: 0.75em 0 0.25em;
   cursor: grab;
   flex-shrink: 0;
-  background: #fafafa;
+  background: var(--color-bg);
   position: relative;
   z-index: 2;
 }
@@ -729,7 +575,7 @@ margin-top: 1rem;
   border-radius: 1em;
 }
 
-/* Close button */
+/* Toggle button */
 .sp-toggle {
   position: absolute;
   top: 5.5em;
@@ -739,7 +585,7 @@ margin-top: 1rem;
   border: none;
   cursor: pointer;
   border-radius: 0 0.5em 0.5em 0;
-  background: #fafafa;
+  background: var(--color-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -747,7 +593,7 @@ margin-top: 1rem;
   padding: 0;
   box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
   transition: background 0.2s ease;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .sp-toggle svg {
@@ -765,7 +611,7 @@ margin-top: 1rem;
   transform: rotate(180deg);
 }
 
-/* Search bar on hero */
+/* ── Search bar ── */
 .sp-search-bar {
   position: absolute;
   top: 0.75em;
@@ -793,19 +639,18 @@ margin-top: 1rem;
   flex-shrink: 0;
 }
 
-
 .sp-search-bar__input {
   flex: 1;
   border: none;
   background: none;
-  font-size: 0.75em;
-  font-family: Montserrat, sans-serif;
+  font-size: var(--font-sm);
+  font-family: var(--font-body);
   color: #333;
   outline: none;
 }
 
 .sp-search-bar__input::placeholder {
-  color: #999;
+  color: var(--color-text-subtle);
 }
 
 .sp-search-bar__clear {
@@ -824,15 +669,14 @@ margin-top: 1rem;
   color: #333;
 }
 
-
-/* Search dropdown */
+/* ── Search dropdown ── */
 .sp-search-dropdown {
   position: absolute;
   top: 3.5em;
   left: 0.75em;
   right: 0.75em;
   max-height: 70vh;
-  background: #fff;
+  background: var(--color-bg-white);
   border-radius: 1em;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   z-index: 50;
@@ -856,12 +700,13 @@ margin-top: 1rem;
   border-radius: 3px;
 }
 
+/* Search chips */
 .sp-search-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.3em;
   padding: 0.6em 0.75em;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .sp-search-chip {
@@ -871,10 +716,10 @@ margin-top: 1rem;
   padding: 0.3em 0.7em 0.3em 0.3em;
   border: 1.5px solid #e0e0e0;
   border-radius: 2em;
-  background: #fff;
+  background: var(--color-bg-white);
   cursor: pointer;
   font-size: 0.8em;
-  font-family: Montserrat, sans-serif;
+  font-family: var(--font-body);
   color: #555;
   position: relative;
   overflow: hidden;
@@ -922,6 +767,7 @@ margin-top: 1rem;
   filter: brightness(0) invert(1);
 }
 
+/* Search results */
 .sp-search-results {
   padding: 0.3em 0;
 }
@@ -936,7 +782,7 @@ margin-top: 1rem;
   background: none;
   cursor: pointer;
   text-align: left;
-  font-family: Montserrat, sans-serif;
+  font-family: var(--font-body);
   transition: background 0.15s ease;
 }
 
@@ -974,9 +820,9 @@ margin-top: 1rem;
 }
 
 .sp-search-result__name {
-  font-size: 0.75em;
+  font-size: var(--font-sm);
   font-weight: 600;
-  color: #222;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -984,17 +830,17 @@ margin-top: 1rem;
 
 .sp-search-result__cat {
   font-size: 0.6em;
-  color: #999;
+  color: var(--color-text-subtle);
 }
 
 .sp-search-empty {
   padding: 1.5em;
   text-align: center;
-  font-size: 0.75em;
-  color: #999;
+  font-size: var(--font-sm);
+  color: var(--color-text-subtle);
 }
 
-/* Hero image */
+/* ── Hero image ── */
 .sp-hero {
   position: relative;
   width: 100%;
@@ -1004,14 +850,11 @@ margin-top: 1rem;
 }
 
 .sp-hero__img {
-  border-radius: 1.2em 1.2em 0 0;
-}
-
-.sp-hero__img {
   width: 100%;
   height: 14em;
   object-fit: cover;
   display: block;
+  border-radius: 1.2em 1.2em 0 0;
 }
 
 .sp-hero__logo {
@@ -1027,6 +870,7 @@ margin-top: 1rem;
   opacity: 0.45;
 }
 
+/* Social icons on hero */
 .sp-socials {
   position: absolute;
   top: 0.75em;
@@ -1060,7 +904,7 @@ margin-top: 1rem;
   height: 1em;
 }
 
-/* Head: category + name + actions */
+/* ── Head: category + name + actions ── */
 .sp-head {
   padding: 0 1.75em 1em;
   flex-shrink: 0;
@@ -1068,24 +912,17 @@ margin-top: 1rem;
 
 .sp-head__cat {
   display: inline-block;
-  font-family: Montserrat, sans-serif;
-  font-size: 0.65em;
+  font-family: var(--font-body);
+  font-size: var(--font-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 0.35em;
 }
 
-.sp-head__row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.75em;
-}
-
 .sp-head__name {
-  font-family: "social-gothic", Montserrat, sans-serif;
-  font-size: 2.1em;
+  font-family: var(--font-display);
+  font-size: var(--font-2xl);
   font-weight: 400;
   line-height: 1.0;
   text-transform: uppercase;
@@ -1096,32 +933,7 @@ margin-top: 1rem;
   min-width: 0;
 }
 
-/* Action icons (phone, website, navigate) */
-.sp-actions {
-  display: flex;
-  gap: 0.4em;
-  flex-shrink: 0;
-  padding-top: 0.15em;
-}
-
-.sp-action {
-  width: 2.2em;
-  height: 2.2em;
-  border-radius: 50%;
-  background: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #555;
-  text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.sp-action:hover {
-  background: #e0e0e0;
-  color: #222;
-}
-
+/* Action links (phone, navigate, website) */
 .sp-action-links {
   display: flex;
   gap: 0.75em;
@@ -1144,7 +956,7 @@ margin-top: 1rem;
 
 .sp-action-link:hover {
   background: #e0e0e0;
-  color: #222;
+  color: var(--color-text);
 }
 
 .sp-action-link svg {
@@ -1153,19 +965,7 @@ margin-top: 1rem;
   flex-shrink: 0;
 }
 
-.sp-action svg {
-  width: 1em;
-  height: 1em;
-}
-
-/* Info bar (address + socials) */
-.sp-info-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35em 1em;
-  margin-top: 0.75em;
-}
-
+/* Info rows */
 .sp-info-row {
   display: flex;
   align-items: center;
@@ -1174,7 +974,7 @@ margin-top: 1rem;
 
 .sp-info-row__icon {
   flex-shrink: 0;
-  color: #999;
+  color: var(--color-text-subtle);
   display: flex;
 }
 
@@ -1203,7 +1003,7 @@ margin-top: 1rem;
   color: #333;
 }
 
-/* Scrollable body */
+/* ── Scrollable body ── */
 .sp-body {
   padding: 1.25em 1.75em 1.5em;
   overflow-y: auto;
@@ -1220,25 +1020,25 @@ margin-top: 1rem;
   border-radius: 1em;
 }
 
-/* Description blocks */
+/* Description */
 .sp-about {
   margin-bottom: 1.5em;
 }
 
 .sp-about__title {
-  font-family: "social-gothic", Montserrat, sans-serif;
+  font-family: var(--font-display);
   font-size: 0.8em;
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #999;
+  color: var(--color-text-subtle);
   margin: 0 0 0.6em;
 }
 
 .sp-about__text {
-  font-size: 0.88em;
+  font-size: var(--font-base);
   line-height: 1.7;
-  color: #444;
+  color: var(--color-text-light);
 }
 
 .sp-about__text p {
@@ -1252,12 +1052,12 @@ margin-top: 1rem;
 }
 
 .sp-hours h3 {
-  font-family: "social-gothic", Montserrat, sans-serif;
-  font-size: 1.3em;
+  font-family: var(--font-display);
+  font-size: var(--font-lg);
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: -0.01em;
-  color: #222;
+  color: var(--color-text);
   margin: 0 0 0.75em;
 }
 
@@ -1265,7 +1065,7 @@ margin-top: 1rem;
   width: 100%;
   font-size: 0.78em;
   border-collapse: collapse;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .sp-hours td {
@@ -1288,19 +1088,19 @@ margin-top: 1rem;
   font-weight: 700;
 }
 
-/* Discover section */
+/* ── Discover section ── */
 .sp-discover {
   margin-top: 1.25em;
   padding-top: 1.25em;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid var(--color-border);
 }
 
 .sp-discover__heading {
-  font-family: "social-gothic", Montserrat, sans-serif;
-  font-size: 1.6em;
+  font-family: var(--font-display);
+  font-size: var(--font-xl);
   font-weight: 400;
   text-transform: uppercase;
-  color: #222;
+  color: var(--color-text);
   margin: 0 0 0.75em;
   letter-spacing: -0.01em;
 }
@@ -1311,12 +1111,12 @@ margin-top: 1rem;
 }
 
 .sp-similar__title {
-  font-family: "social-gothic", Montserrat, sans-serif;
-  font-size: 1.1em;
+  font-family: var(--font-display);
+  font-size: var(--font-md);
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: -0.01em;
-  color: #222;
+  color: var(--color-text);
   margin: 0 0 0.6em;
   display: flex;
   align-items: center;
@@ -1367,11 +1167,11 @@ margin-top: 1rem;
   border-radius: 0.6em;
   overflow: hidden;
   cursor: pointer;
-  background: #fff;
+  background: var(--color-bg-white);
   box-shadow:
     0 1px 2px rgba(0, 0, 0, 0.06),
     0 4px 12px rgba(0, 0, 0, 0.05);
-  font-family: Montserrat, sans-serif;
+  font-family: var(--font-body);
   padding: 0;
 }
 
@@ -1400,19 +1200,20 @@ margin-top: 1rem;
 .sp-similar__name {
   font-size: 0.8em;
   font-weight: 600;
-  color: #222;
+  color: var(--color-text);
   padding: 0.55em 0.65em 0.15em;
   line-height: 1.25;
 }
 
 .sp-similar__cat {
-  font-size: 0.65em;
+  font-size: var(--font-xs);
   font-weight: 500;
   color: #aaa;
   padding: 0 0.85em 0.6em;
   line-height: 1.2;
 }
 
+/* ── Side Panel Mobile ── */
 @media screen and (max-width: 767px) {
   .side-panel {
     top: auto;
@@ -1426,6 +1227,8 @@ margin-top: 1rem;
     box-shadow: 0 -1em 3em rgba(0, 0, 0, 0.15);
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+    flex-direction: column;
   }
 
   .side-panel.is-open {
@@ -1460,7 +1263,7 @@ margin-top: 1rem;
     right: auto;
     margin: 0.6em;
     border-radius: 0.8em;
-    background: #fff;
+    background: var(--color-bg-white);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   }
 
@@ -1492,7 +1295,7 @@ margin-top: 1rem;
     max-width: 6em;
     max-height: 4.5em;
     object-fit: contain;
-    background: #fff;
+    background: var(--color-bg-white);
     border-radius: 0.4em;
     border: none;
     padding: 0;
@@ -1506,7 +1309,7 @@ margin-top: 1rem;
   }
 
   .sp-head__name {
-    font-size: 2.4em;
+    font-size: var(--font-3xl);
   }
 
   .sp-social {
@@ -1528,19 +1331,6 @@ margin-top: 1rem;
     height: 1.1em;
   }
 
-  .map-compass {
-    width: 4.5em;
-    height: 4.5em;
-    top: auto;
-    bottom: calc(55vh + 0.8em);
-    right: 0.8em;
-  }
-
-  .side-panel {
-    overflow-y: auto;
-    flex-direction: column;
-  }
-
   .sp-hero,
   .sp-head {
     flex-shrink: 1;
@@ -1549,6 +1339,7 @@ margin-top: 1rem;
   .sp-body {
     overflow-y: visible;
     flex: none;
+    padding: 1em 1.25em;
   }
 
   .sp-hours h3 {
@@ -1557,6 +1348,10 @@ margin-top: 1rem;
 
   .sp-hours table {
     font-size: 1em;
+  }
+
+  .sp-hours {
+    padding: 0;
   }
 
   .sp-similar__card {
@@ -1568,11 +1363,11 @@ margin-top: 1rem;
   }
 
   .sp-similar__name {
-    font-size: 1.1em;
+    font-size: var(--font-md);
   }
 
   .sp-similar__cat {
-    font-size: 0.85em;
+    font-size: var(--font-base);
   }
 
   .sp-discover__heading {
@@ -1580,7 +1375,9 @@ margin-top: 1rem;
   }
 
   .sp-similar__title {
-    font-size: 1.3em;
+    font-size: var(--font-lg);
+    gap: 0.5em;
+    margin-bottom: 0.6em;
   }
 
   .sp-similar__marker {
@@ -1595,11 +1392,10 @@ margin-top: 1rem;
 
   .sp-similar__list {
     gap: 1.2em;
-  }
-
-  .sp-similar__title {
-    gap: 0.5em;
-    margin-bottom: 0.6em;
+    margin-left: -1.25em;
+    margin-right: -1.25em;
+    padding-left: 1.25em;
+    padding-right: 1.25em;
   }
 
   .sp-similar {
@@ -1607,7 +1403,7 @@ margin-top: 1rem;
   }
 
   .sp-about__title {
-    font-size: 1.1em;
+    font-size: var(--font-md);
   }
 
   .sp-about__text {
@@ -1623,36 +1419,20 @@ margin-top: 1rem;
     width: 0.9em;
     height: 0.9em;
   }
-
-  .sp-body {
-    padding: 1em 1.25em;
-  }
-
-  .sp-similar__list {
-    margin-left: -1.25em;
-    margin-right: -1.25em;
-    padding-left: 1.25em;
-    padding-right: 1.25em;
-  }
-
-  .sp-hours {
-    padding: 0;
-  }
 }
 
+/* Side Panel Tablet */
 @media screen and (min-width: 768px) and (max-width: 1200px) {
   .side-panel {
     width: 26em;
-    font-size: 1.05em;
+    font-size: var(--font-md);
   }
 }
 
 /* ==============================
- * SEARCH BUTTON & PANEL
+ * COMPASS
  * ============================== */
 
-/* Search button - bottom left */
-/* Compass */
 .map-compass {
   position: fixed;
   top: 1.2em;
@@ -1668,7 +1448,7 @@ margin-top: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0.15em 0.8em rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0.15em 0.8em var(--color-shadow);
   padding: 0;
   transition: box-shadow 0.2s ease;
 }
@@ -1718,6 +1498,28 @@ margin-top: 1rem;
   fill: #bbb;
 }
 
+@media screen and (max-width: 767px) {
+  .side-panel .map-compass {
+    position: absolute;
+    top: -5em;
+    bottom: auto;
+    right: 0.8em;
+    width: 4.5em;
+    height: 4.5em;
+    transition: width 0.3s ease, height 0.3s ease, top 0.3s ease;
+  }
+
+  .side-panel .map-compass.is-compact {
+    width: 3.5em;
+    height: 3.5em;
+    top: -4em;
+  }
+}
+
+/* ==============================
+ * SEARCH BUTTON & PANEL
+ * ============================== */
+
 .search-btn {
   position: fixed;
   bottom: 1.5em;
@@ -1726,7 +1528,7 @@ margin-top: 1rem;
   height: 3.5em;
   border: none;
   border-radius: 50%;
-  background: #fff;
+  background: var(--color-bg-white);
   color: #333;
   cursor: pointer;
   z-index: 999;
@@ -1760,13 +1562,13 @@ margin-top: 1rem;
   width: 24em;
   height: 70vh;
   max-height: 36em;
-  background: #fff;
+  background: var(--color-bg-white);
   border-radius: 1em;
   z-index: 998;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0.25em 1.5em rgba(0, 0, 0, 0.12);
-  font-family: Montserrat, sans-serif;
+  box-shadow: 0 0.25em 1.5em var(--color-shadow);
+  font-family: var(--font-body);
   transform: translateY(1em);
   opacity: 0;
   pointer-events: none;
@@ -1780,7 +1582,7 @@ margin-top: 1rem;
   pointer-events: all;
 }
 
-/* Top bar */
+/* Search panel top bar */
 .search-panel__top {
   display: flex;
   align-items: center;
@@ -1812,9 +1614,9 @@ margin-top: 1rem;
   background: #f5f5f5;
   border-radius: 0.5em;
   padding: 0.6em 0.6em 0.6em 2.2em;
-  font-size: 0.85em;
-  font-family: Montserrat, sans-serif;
-  color: #222;
+  font-size: var(--font-base);
+  font-family: var(--font-body);
+  color: var(--color-text);
   outline: none;
   transition: background 0.2s ease;
 }
@@ -1837,7 +1639,7 @@ margin-top: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
+  color: var(--color-text-muted);
   flex-shrink: 0;
   transition: background 0.2s ease, color 0.2s ease;
 }
@@ -1847,10 +1649,10 @@ margin-top: 1rem;
   color: #333;
 }
 
-/* Filters dropdown */
+/* Search panel filters */
 .search-panel__filters {
   display: none;
-  background: #fafafa;
+  background: var(--color-bg);
   border-bottom: 1px solid #f0f0f0;
   max-height: 14em;
   overflow-y: auto;
@@ -1872,7 +1674,7 @@ margin-top: 1rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #999;
+  color: var(--color-text-subtle);
 }
 
 .search-filters__close {
@@ -1880,7 +1682,7 @@ margin-top: 1rem;
   background: none;
   cursor: pointer;
   font-size: 1.2em;
-  color: #999;
+  color: var(--color-text-subtle);
   line-height: 1;
   padding: 0;
 }
@@ -1897,7 +1699,7 @@ margin-top: 1rem;
   align-items: center;
   gap: 0.35em;
   padding: 0.25em 0.6em 0.25em 0.25em;
-  background: #fff;
+  background: var(--color-bg-white);
   border: 1.5px solid #e0e0e0;
   border-radius: 2em;
   cursor: pointer;
@@ -1975,7 +1777,7 @@ margin-top: 1rem;
   font-weight: 600;
 }
 
-/* List */
+/* Search panel list */
 .search-panel__list {
   flex: 1;
   overflow-y: auto;
@@ -2001,7 +1803,7 @@ margin-top: 1rem;
   background: none;
   cursor: pointer;
   text-align: left;
-  font-family: Montserrat, sans-serif;
+  font-family: var(--font-body);
   transition: background 0.15s ease;
 }
 
@@ -2041,15 +1843,15 @@ margin-top: 1rem;
 .search-item__name {
   font-size: 0.82em;
   font-weight: 600;
-  color: #222;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .search-item__cat {
-  font-size: 0.65em;
-  color: #999;
+  font-size: var(--font-xs);
+  color: var(--color-text-subtle);
 }
 
 .search-empty {
@@ -2059,6 +1861,7 @@ margin-top: 1rem;
   color: #aaa;
 }
 
+/* Search panel mobile */
 @media screen and (max-width: 767px) {
   .search-btn {
     bottom: 0.75em;
@@ -2100,220 +1903,6 @@ margin-top: 1rem;
   cursor: not-allowed;
 }
 
-/* Popup container for text */
-.zoomend-popup {
-  color: #333;
-  z-index: 10001;
-  font-weight: bold;
-  font-family: Montserrat, sans-serif;
-  font-size: 10em;
-  font-weight: 200;
-  line-height: 0.75em;
-  text-transform: uppercase;
-  text-align: center;
-  width: 350px;
-}
-
-.zoomend-popup .letter {
-  display: inline-block;
-  transform-origin: bottom;
-}
-
-/* ==============================
- * EXPERIENCE STEPS & NAVIGATION
- * ============================== */
-
-.experience-step-title {
-  font-size: 1.2rem;
-  margin-bottom: 0px;
-}
-
-.experience-step-text {
-  font-size: 0.75rem;
-  font-family: Montserrat, sans-serif;
-  font-weight: normal;
-  line-height: 1.4;
-}
-
-.experience-steps {
-  -webkit-overflow-scrolling: touch;
-  max-height: 13.5rem;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  margin-right: -15px;
-  padding-right: 15px;
-  overflow-y: scroll;
-  touch-action: pan-y;
-  cursor: grab;
-}
-
-.experience-steps:active {
-  cursor: grabbing;
-}
-
-/* Custom scrollbar for experience steps */
-.experience-steps::-webkit-scrollbar {
-  width: 5px;
-  background-color: transparent;
-}
-
-.experience-steps::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.5);
-}
-
-.experience-steps::-webkit-scrollbar-track {
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Prevent text selection */
-.experience-steps, 
-.experience-steps * {
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  touch-action: pan-y !important;
-}
-
-/* Marker Navigation */
-.marker-navigation {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  right: 0;
-  transform: translateY(-50%);
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
-  z-index: 1000;
-  padding: 0 20px;
-}
-
-.nav-arrow {
-  pointer-events: all;
-  background: rgba(255,255,255,0.9);
-  border: 2px solid #000;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
-}
-
-.nav-arrow:hover {
-  background: #000;
-  color: white;
-  transform: scale(1.1);
-}
-
-.nav-arrow:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-/* ==============================
- * PRINT STYLES
- * ============================== */
-
-@media print {
-  .mapboxgl-ctrl-group {
-    display: none !important;
-  }
-}
-
-.performance-tooltip,
-.performance-warning {
-  position: absolute;
-  z-index: 1000;
-  background: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  max-width: 300px;
-  animation: fade-in 0.3s ease;
-}
-
-.performance-warning {
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 400px;
-}
-
-.tooltip-content,
-.warning-content {
-  padding: 15px;
-  position: relative;
-}
-
-.tooltip-content h3,
-.warning-content h3 {
-  margin-top: 0;
-  color: #333;
-  font-size: 16px;
-}
-
-.tooltip-content p,
-.warning-content p {
-  margin: 8px 0;
-  font-size: 14px;
-  color: #555;
-}
-
-.tooltip-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #999;
-}
-
-.warning-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-}
-
-.warning-ok,
-.warning-enable {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.warning-ok {
-  background: #f0f0f0;
-  color: #333;
-}
-
-.warning-enable {
-  background: #4264fb;
-  color: white;
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* popup-styles.css (of waar je popup stijlen staan) */
-
-/* In popup-styles.css */
-
-/* In popup-styles.css */
-
-/* In popup-styles.css */
-
-/* ==================================================== */
-
 /* ==============================
  * NAVIGATION CONFIRMATION MODAL
  * ============================== */
@@ -2336,8 +1925,8 @@ margin-top: 1rem;
 
 .navigation-confirm-modal {
   background: white;
-  border-radius: 1.25rem;
-  padding: 2rem;
+  border-radius: 1.25em;
+  padding: 2em;
   max-width: 400px;
   width: 90%;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -2346,28 +1935,28 @@ margin-top: 1rem;
 }
 
 .navigation-confirm-title {
-  font-family: Montserrat, sans-serif !important;
-  font-size: 1rem !important;
+  font-family: var(--font-body) !important;
+  font-size: 1em !important;
   font-weight: 700 !important;
   line-height: normal !important;
   text-transform: none !important;
-  margin: 0 0 1rem 0;
+  margin: 0 0 1em 0;
   color: #333;
   text-align: center;
 }
 
 .navigation-confirm-message {
-  font-family: Montserrat, sans-serif;
-  font-size: 0.875rem;
+  font-family: var(--font-body);
+  font-size: var(--font-base);
   line-height: 1.5;
-  margin: 0 0 1.5rem 0;
-  color: #666;
+  margin: 0 0 1.5em 0;
+  color: var(--color-text-muted);
   text-align: center;
 }
 
 .navigation-confirm-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 1em;
   justify-content: center;
 }
 
@@ -2379,4 +1968,14 @@ margin-top: 1rem;
 
 .navigation-confirm-buttons .button-base::after {
   display: none;
+}
+
+/* ==============================
+ * PRINT STYLES
+ * ============================== */
+
+@media print {
+  .mapboxgl-ctrl-group {
+    display: none !important;
+  }
 }
