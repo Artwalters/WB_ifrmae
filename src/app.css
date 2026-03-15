@@ -1243,6 +1243,7 @@ margin-top: 1rem;
 
 .sp-about__text p {
   margin: 0 0 0.5em;
+  font-size: inherit;
 }
 
 /* Opening hours */
