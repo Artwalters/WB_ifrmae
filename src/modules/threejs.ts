@@ -3,6 +3,7 @@
 import type { Map } from 'mapbox-gl';
 
 import { resourceManager } from './resourceManager.js';
+import { state } from './state.js';
 
 // Global declarations for THREE.js
 declare global {
@@ -56,7 +57,7 @@ const modelConfigs: ModelConfig[] = [
     origin: [50.898577, 5.948917],
     altitude: 0,
     rotate: [Math.PI / 2, 5.76, 0],
-    url: 'https://cdn.jsdelivr.net/gh/Artwalters/woonboulevard_buildings_gltf_V3@main/plein3.glb',
+    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/plein3_logomap.glb',
     scale: 0.235,
     materials: {
       base: '#ece6d7',
@@ -271,6 +272,108 @@ const imagePlaneConfig: ImagePlaneConfig = {
   height: 13,
 };
 
+// Pending sign meshes waiting for CMS data
+const pendingSigns: Array<{ mesh: any; bordId: string }> = [];
+
+/**
+ * Look up a store's logo_wb URL from CMS data by sign_bord ID
+ */
+function getLogoByBordId(bordId: string): { logoUrl: string | null; storeName: string | null } {
+  const feature = state.mapLocations.features.find(
+    (f: any) => f.properties.sign_bord === bordId
+  );
+  if (!feature) return { logoUrl: null, storeName: null };
+  return {
+    logoUrl: feature.properties?.logo_wb || null,
+    storeName: feature.properties?.name || null,
+  };
+}
+
+/**
+ * Load a logo onto a white canvas background and apply as material
+ */
+function applyLogoWithWhiteBackground(mesh: any, logoUrl: string): void {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 256;
+    const ctx = canvas.getContext('2d')!;
+
+    // White background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 512, 256);
+
+    // Draw logo centered and fitted
+    const scale = Math.min(512 / img.width, 256 / img.height) * 0.85;
+    const w = img.width * scale;
+    const h = img.height * scale;
+    ctx.drawImage(img, (512 - w) / 2, (256 - h) / 2, w, h);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.flipY = false;
+    mesh.material = new THREE.MeshBasicMaterial({
+      map: texture,
+      side: THREE.DoubleSide,
+    });
+  };
+  img.src = logoUrl;
+}
+
+/**
+ * Apply sign textures to all pending sign meshes
+ * Called after CMS data is loaded
+ */
+function applySignTextures(): void {
+  pendingSigns.forEach(({ mesh, bordId }) => {
+    const { logoUrl, storeName } = getLogoByBordId(bordId);
+
+    if (logoUrl) {
+      applyLogoWithWhiteBackground(mesh, logoUrl);
+    } else {
+      const label = storeName
+        ? `${storeName} (no logo)`
+        : `${bordId}`;
+      mesh.material = createPlaceholderMaterial(label);
+    }
+  });
+}
+
+/**
+ * Create a placeholder material with a label for unmapped signs
+ */
+function createPlaceholderMaterial(label: string): THREE.MeshBasicMaterial {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d')!;
+
+  // Background
+  ctx.fillStyle = '#e0e0e0';
+  ctx.fillRect(0, 0, 512, 256);
+
+  // Border
+  ctx.strokeStyle = '#ff4444';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(4, 4, 504, 248);
+
+  // Text
+  ctx.fillStyle = '#333';
+  ctx.font = 'bold 28px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, 256, 128);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.flipY = false;
+  return new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    side: THREE.DoubleSide,
+  });
+}
+
 /**
  * Create image plane for THREE.js
  * @param config - Image plane configuration
@@ -400,6 +503,26 @@ export function createThreeJSLayer(): CustomLayer {
             // Apply flat shading and custom colors to all meshes
             scene3D.traverse((child: any) => {
               if (child.isMesh) {
+                // Detect sign materials (prefix "sign_")
+                const matName = child.material?.name || '';
+                const baseMatName = matName.split('.')[0];
+                if (baseMatName.startsWith('sign_')) {
+                  const bordId = baseMatName.replace('sign_', '');
+                  const { logoUrl, storeName } = getLogoByBordId(bordId);
+
+                  if (logoUrl) {
+                    applyLogoWithWhiteBackground(child, logoUrl);
+                  } else {
+                    // Store for retry and show placeholder
+                    pendingSigns.push({ mesh: child, bordId });
+                    const label = storeName
+                      ? `${storeName} (no logo)`
+                      : `${bordId}`;
+                    child.material = createPlaceholderMaterial(label);
+                  }
+                  return;
+                }
+
                 // Apply custom material colors if defined (but preserve textures)
                 if (config.materials && child.material.name) {
                   // Try exact match first, then try basename
@@ -557,11 +680,18 @@ export function createThreeJSLayer(): CustomLayer {
  * Setup THREE.js layer on map
  * @param map - The mapbox map instance
  */
+export { applySignTextures };
+
 export function setupThreeJSLayer(map: Map): void {
   // Add THREE.js layer when map style is loaded
   map.on('style.load', () => {
     const customLayer = createThreeJSLayer();
     map.addLayer(customLayer);
+
+    // Apply sign textures once map is idle (models + CMS data loaded)
+    map.once('idle', () => {
+      applySignTextures();
+    });
   });
 }
 
