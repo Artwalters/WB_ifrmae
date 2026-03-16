@@ -381,6 +381,9 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     }
   }
 
+  // Scroll panel to top when switching content
+  panelElement.scrollTop = 0;
+
   // Force reflow before adding active class
   panelElement.offsetHeight;
   panelElement.classList.remove('is-peeking');

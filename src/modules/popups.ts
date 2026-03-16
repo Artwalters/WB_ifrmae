@@ -32,8 +32,9 @@ export async function createPopup(location: any, map: Map): Promise<Popup> {
   // Tablet (480px-991px): medium popup, medium offset
   // Desktop (≥992px): larger popup due to fluid scaling, larger offset
   let offset: [number, number];
-  if (window.matchMedia('(max-width: 479px)').matches) {
-    offset = [0, -(window.innerHeight / 8)]; // Mobile - center marker in visible area above panel
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    // Mobile: side panel covers bottom 55vh, so push marker up above the panel
+    offset = [0, -150];
   } else if (window.matchMedia('(max-width: 991px)').matches) {
     offset = [0, 220]; // Medium screens - more centered
   } else {
