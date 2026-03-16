@@ -62,6 +62,11 @@ export function initCompass(map: Map): void {
   document.body.appendChild(btn);
   compassElement = btn;
 
+  // On mobile, start with panel-closed position
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    btn.classList.add('panel-closed');
+  }
+
   // Update rotation on map rotate
   const updateBearing = () => {
     const bearing = map.getBearing();

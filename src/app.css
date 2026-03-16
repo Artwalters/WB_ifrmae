@@ -1499,20 +1499,22 @@ html {
 }
 
 @media screen and (max-width: 767px) {
-  .side-panel .map-compass {
-    position: absolute;
-    top: -5em;
-    bottom: auto;
+  .map-compass {
+    position: fixed;
+    top: auto;
+    bottom: calc(55vh + 1em);
     right: 0.8em;
     width: 4.5em;
     height: 4.5em;
-    transition: width 0.3s ease, height 0.3s ease, top 0.3s ease;
+    transition: width 0.3s ease, height 0.3s ease, bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .side-panel .map-compass.is-compact {
-    width: 3.5em;
-    height: 3.5em;
-    top: -4em;
+  .map-compass.panel-closed {
+    bottom: 1em;
+  }
+
+  .map-compass.panel-peeking {
+    bottom: calc(55vh * 0.45 + 1em);
   }
 }
 

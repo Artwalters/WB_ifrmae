@@ -373,11 +373,12 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     </div>
   `;
 
-  // Move compass inside panel on mobile so it animates with panel
+  // Update compass position on mobile
   if (window.matchMedia('(max-width: 767px)').matches) {
     const compass = document.querySelector('.map-compass') as HTMLElement;
-    if (compass && !panelElement.contains(compass)) {
-      panelElement.appendChild(compass);
+    if (compass) {
+      compass.classList.remove('panel-closed');
+      compass.classList.remove('panel-peeking');
     }
   }
 
@@ -388,15 +389,17 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   panelElement.offsetHeight;
   panelElement.classList.remove('is-peeking');
   panelElement.classList.add('is-open');
-  updateCompassSize(false);
+  updateCompassPosition('open');
 
   // Toggle button
   const toggleBtn = panelElement.querySelector('.sp-toggle') as HTMLElement;
   toggleBtn.addEventListener('click', () => {
     if (panelElement?.classList.contains('is-open')) {
       panelElement.classList.remove('is-open');
+      updateCompassPosition('closed');
     } else {
       panelElement?.classList.add('is-open');
+      updateCompassPosition('open');
     }
   });
 
@@ -512,6 +515,7 @@ export function closeSidePanel(): void {
   if (panelElement) {
     panelElement.classList.remove('is-open');
     panelElement.classList.remove('is-peeking');
+    updateCompassPosition('closed');
   }
 }
 
@@ -520,13 +524,14 @@ export function closeSidePanel(): void {
  * - Touching the map → panel peeks down (more map visible)
  * - Touching the panel → panel comes back up
  */
-function updateCompassSize(peeking: boolean): void {
+function updateCompassPosition(state: 'open' | 'peeking' | 'closed'): void {
   const compass = document.querySelector('.map-compass');
   if (!compass) return;
-  if (peeking) {
-    compass.classList.remove('is-compact');
-  } else {
-    compass.classList.add('is-compact');
+  compass.classList.remove('panel-closed', 'panel-peeking');
+  if (state === 'closed') {
+    compass.classList.add('panel-closed');
+  } else if (state === 'peeking') {
+    compass.classList.add('panel-peeking');
   }
 }
 
@@ -538,7 +543,7 @@ export function setupMobilePeek(map: any): void {
     if (!isMobile() || !panelElement) return;
     if (panelElement.classList.contains('is-open') && !panelElement.classList.contains('is-peeking')) {
       panelElement.classList.add('is-peeking');
-      updateCompassSize(true);
+      updateCompassPosition('peeking');
     }
   });
 
@@ -547,7 +552,7 @@ export function setupMobilePeek(map: any): void {
     if (!isMobile() || !panelElement) return;
     if (panelElement.contains(e.target as Node) && panelElement.classList.contains('is-peeking')) {
       panelElement.classList.remove('is-peeking');
-      updateCompassSize(false);
+      updateCompassPosition('open');
     }
   });
 }
