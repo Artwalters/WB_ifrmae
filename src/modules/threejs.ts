@@ -172,7 +172,7 @@ const modelConfigs: ModelConfig[] = [
     origin: [50.901511, 5.94041],
     altitude: 0,
     rotate: [Math.PI / 2, 5.76, 0],
-    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/sanders_logomap.glb',
+    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/sanders_logomapv2.glb',
     scale: 0.34,
     materials: {
       base: '#ece6d7',
@@ -280,7 +280,10 @@ const pendingSigns: Array<{ mesh: any; bordId: string }> = [];
  */
 function getLogoByBordId(bordId: string): { logoUrl: string | null; storeName: string | null } {
   const feature = state.mapLocations.features.find(
-    (f: any) => f.properties.sign_bord === bordId
+    (f: any) => {
+      const bords = (f.properties.sign_bord || '').split(',').map((s: string) => s.trim());
+      return bords.includes(bordId);
+    }
   );
   if (!feature) return { logoUrl: null, storeName: null };
   return {
