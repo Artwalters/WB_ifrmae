@@ -112,7 +112,7 @@ const modelConfigs: ModelConfig[] = [
     origin: [50.900156, 5.942504],
     altitude: 0,
     rotate: [Math.PI / 2, 5.76, 0],
-    url: 'https://cdn.jsdelivr.net/gh/Artwalters/woonboulevard_buildings_gltf_V3@main/keuken.glb',
+    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/Keuken_logomapv4.glb',
     scale: 0.35,
     materials: {
       base: '#ece6d7',
@@ -132,7 +132,7 @@ const modelConfigs: ModelConfig[] = [
     origin: [50.900573, 5.941485],
     altitude: 0,
     rotate: [Math.PI / 2, 5.76, 0],
-    url: 'https://cdn.jsdelivr.net/gh/Artwalters/woonboulevard_buildings_gltf_V3@main/haco.glb',
+    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/haco_logomapv3.glb',
     scale: 0.35,
     materials: {
       base: '#ece6d7',
@@ -152,7 +152,7 @@ const modelConfigs: ModelConfig[] = [
     origin: [50.901362, 5.941023],
     altitude: 0,
     rotate: [Math.PI / 2, 5.76, 0],
-    url: 'https://cdn.jsdelivr.net/gh/Artwalters/woonboulevard_buildings_gltf_V3@main/Goosens.glb',
+    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/goossens_logomapv3.glb',
     scale: 0.33,
     materials: {
       base: '#ece6d7',
@@ -172,7 +172,7 @@ const modelConfigs: ModelConfig[] = [
     origin: [50.901511, 5.94041],
     altitude: 0,
     rotate: [Math.PI / 2, 5.76, 0],
-    url: 'https://cdn.jsdelivr.net/gh/Artwalters/woonboulevard_buildings_gltf_V3@main/Sanders.glb',
+    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/sanders_logomap.glb',
     scale: 0.34,
     materials: {
       base: '#ece6d7',
@@ -192,7 +192,7 @@ const modelConfigs: ModelConfig[] = [
     origin: [50.898831, 5.947769],
     altitude: 0,
     rotate: [Math.PI / 2, 6.25, 0],
-    url: 'https://cdn.jsdelivr.net/gh/Artwalters/woonboulevard_buildings_gltf_V3@main/Stox.glb',
+    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/Bijstox_logomapv2.glb',
     scale: 0.2,
     materials: {
       base: '#ece6d7',
@@ -212,7 +212,7 @@ const modelConfigs: ModelConfig[] = [
     origin: [50.900655, 5.940551],
     altitude: 0,
     rotate: [Math.PI / 2, 5.76, 0],
-    url: 'https://cdn.jsdelivr.net/gh/Artwalters/woonboulevard_buildings_gltf_V3@main/subway.glb',
+    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/subway_logomap.glb',
     scale: 0.33,
     materials: {
       base: '#ece6d7',
