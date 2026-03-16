@@ -59,12 +59,36 @@ export function initCompass(map: Map): void {
       <polygon class="map-compass__south" points="24,40 21,27 24,28.5 27,27" />
     </svg>
   `;
-  document.body.appendChild(btn);
+  // Wrapper for zoom + compass
+  const controls = document.createElement('div');
+  controls.className = 'map-controls';
+
+  // Zoom controls
+  const zoomWrap = document.createElement('div');
+  zoomWrap.className = 'map-zoom';
+
+  const zoomIn = document.createElement('button');
+  zoomIn.className = 'map-zoom__btn';
+  zoomIn.setAttribute('aria-label', 'Zoom in');
+  zoomIn.innerHTML = '+';
+  zoomIn.addEventListener('click', () => map.zoomIn({ duration: 300 }));
+
+  const zoomOut = document.createElement('button');
+  zoomOut.className = 'map-zoom__btn';
+  zoomOut.setAttribute('aria-label', 'Zoom out');
+  zoomOut.innerHTML = '&minus;';
+  zoomOut.addEventListener('click', () => map.zoomOut({ duration: 300 }));
+
+  zoomWrap.appendChild(zoomIn);
+  zoomWrap.appendChild(zoomOut);
+  controls.appendChild(zoomWrap);
+  controls.appendChild(btn);
+  document.body.appendChild(controls);
   compassElement = btn;
 
   // On mobile, start with panel-closed position
   if (window.matchMedia('(max-width: 767px)').matches) {
-    btn.classList.add('panel-closed');
+    controls.classList.add('panel-closed');
   }
 
   // Update rotation on map rotate

@@ -373,13 +373,9 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     </div>
   `;
 
-  // Update compass position on mobile
+  // Update compass and zoom position on mobile
   if (window.matchMedia('(max-width: 767px)').matches) {
-    const compass = document.querySelector('.map-compass') as HTMLElement;
-    if (compass) {
-      compass.classList.remove('panel-closed');
-      compass.classList.remove('panel-peeking');
-    }
+    updateCompassPosition('open');
   }
 
   // Scroll panel to top when switching content
@@ -525,13 +521,13 @@ export function closeSidePanel(): void {
  * - Touching the panel → panel comes back up
  */
 function updateCompassPosition(state: 'open' | 'peeking' | 'closed'): void {
-  const compass = document.querySelector('.map-compass');
-  if (!compass) return;
-  compass.classList.remove('panel-closed', 'panel-peeking');
+  const controls = document.querySelector('.map-controls');
+  if (!controls) return;
+  controls.classList.remove('panel-closed', 'panel-peeking');
   if (state === 'closed') {
-    compass.classList.add('panel-closed');
+    controls.classList.add('panel-closed');
   } else if (state === 'peeking') {
-    compass.classList.add('panel-peeking');
+    controls.classList.add('panel-peeking');
   }
 }
 
