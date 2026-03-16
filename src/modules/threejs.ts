@@ -306,7 +306,7 @@ function applyLogoWithWhiteBackground(mesh: any, logoUrl: string): void {
     ctx.fillRect(0, 0, 512, 256);
 
     // Draw logo centered and fitted
-    const scale = Math.min(512 / img.width, 256 / img.height) * 0.85;
+    const scale = Math.min(512 / img.width, 256 / img.height) * 1.15;
     const w = img.width * scale;
     const h = img.height * scale;
     ctx.drawImage(img, (512 - w) / 2, (256 - h) / 2, w, h);
