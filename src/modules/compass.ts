@@ -71,13 +71,13 @@ export function initCompass(map: Map): void {
   zoomIn.className = 'map-zoom__btn';
   zoomIn.setAttribute('aria-label', 'Zoom in');
   zoomIn.innerHTML = '+';
-  zoomIn.addEventListener('click', () => map.zoomIn({ duration: 300 }));
+  zoomIn.addEventListener('click', () => map.easeTo({ zoom: map.getZoom() + 0.5, duration: 300 }));
 
   const zoomOut = document.createElement('button');
   zoomOut.className = 'map-zoom__btn';
   zoomOut.setAttribute('aria-label', 'Zoom out');
   zoomOut.innerHTML = '&minus;';
-  zoomOut.addEventListener('click', () => map.zoomOut({ duration: 300 }));
+  zoomOut.addEventListener('click', () => map.easeTo({ zoom: map.getZoom() - 0.5, duration: 300 }));
 
   zoomWrap.appendChild(zoomIn);
   zoomWrap.appendChild(zoomOut);
@@ -91,7 +91,7 @@ export function initCompass(map: Map): void {
     controls.classList.add('panel-closed');
   }
 
-  // Update rotation on map rotate
+  // Update rotation and active tick on map rotate
   const updateBearing = () => {
     const bearing = map.getBearing();
     btn.style.setProperty('--bearing', `${-bearing}deg`);
