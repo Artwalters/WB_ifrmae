@@ -1566,7 +1566,7 @@ html {
 @media screen and (max-width: 767px) {
   .map-controls {
     top: auto;
-    bottom: calc(55vh + 1em);
+    bottom: calc(47vh + 1em);
     right: 0.8em;
     transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -1576,7 +1576,7 @@ html {
   }
 
   .map-controls.panel-peeking {
-    bottom: calc(55vh * 0.45 + 1em);
+    bottom: calc(47vh * 0.45 + 1em);
   }
 
   .map-compass {

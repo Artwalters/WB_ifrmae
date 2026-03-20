@@ -16,6 +16,11 @@ function createPanelElement(): HTMLElement {
   const panel = document.createElement('div');
   panel.className = 'side-panel';
   document.body.appendChild(panel);
+
+  // Prevent wheel events from bubbling to the map so panel is scrollable
+  panel.addEventListener('wheel', (e) => {
+    e.stopPropagation();
+  }, { passive: true });
   return panel;
 }
 

@@ -23,15 +23,15 @@ function dimOtherMarkers(map: Map, selectedId: string): void {
     if (!map.getLayer(layer)) return;
     if (layer === 'location-markers') {
       map.setPaintProperty(layer, 'circle-opacity', [
-        'case', ['==', ['get', 'id'], selectedId], 1, 0.35,
+        'case', ['==', ['get', 'id'], selectedId], 1, 0.5,
       ]);
     } else if (layer === 'location-icons') {
       map.setPaintProperty(layer, 'icon-opacity', [
-        'case', ['==', ['get', 'id'], selectedId], 1, 0.35,
+        'case', ['==', ['get', 'id'], selectedId], 1, 0.5,
       ]);
     } else if (layer === 'location-labels') {
       map.setPaintProperty(layer, 'text-opacity', [
-        'case', ['==', ['get', 'id'], selectedId], 1, 0.35,
+        'case', ['==', ['get', 'id'], selectedId], 1, 0.5,
       ]);
     }
   });
