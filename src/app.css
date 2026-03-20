@@ -1455,6 +1455,7 @@ html {
   border-radius: 1em;
   overflow: hidden;
   box-shadow: 0 0.2em 1em var(--color-shadow);
+  order: 1;
 }
 
 .map-zoom__btn {
