@@ -1,6 +1,6 @@
 // Side panel module - shows location details on the left side
 
-import { createPopup } from './popups.js';
+import { createPopup, closeActivePopup } from './popups.js';
 import { getFilteredLocations, getUniqueCategories } from './searchPanel.js';
 import { state } from './state.js';
 
@@ -147,7 +147,7 @@ function setupSearch(container: HTMLElement): void {
     const resultsContainer = dropdown.querySelector('.sp-search-results') as HTMLElement;
     if (!resultsContainer) return;
 
-    const results = locations.slice(0, 10).map((f: any) => {
+    const results = locations.map((f: any) => {
       const p = f.properties;
       const c = p.color || '#6B46C1';
       return `<button class="sp-search-result" data-name="${p.name}">
@@ -205,6 +205,11 @@ function setupSearch(container: HTMLElement): void {
     e.stopPropagation();
     closeDropdown();
   });
+
+  // Prevent wheel events from bubbling to the map so dropdown is scrollable
+  dropdown.addEventListener('wheel', (e) => {
+    e.stopPropagation();
+  }, { passive: true });
 
   document.addEventListener('mousedown', (e) => {
     if (dropdown.style.display === 'none') return;
@@ -513,6 +518,7 @@ export function closeSidePanel(): void {
     panelElement.classList.remove('is-peeking');
     updateCompassPosition('closed');
   }
+  closeActivePopup();
 }
 
 /**

@@ -17,6 +17,41 @@ declare global {
   }
 }
 
+function dimOtherMarkers(map: Map, selectedId: string): void {
+  const layers = ['location-markers', 'location-icons', 'location-labels'];
+  layers.forEach((layer) => {
+    if (!map.getLayer(layer)) return;
+    if (layer === 'location-markers') {
+      map.setPaintProperty(layer, 'circle-opacity', [
+        'case', ['==', ['get', 'id'], selectedId], 1, 0.35,
+      ]);
+    } else if (layer === 'location-icons') {
+      map.setPaintProperty(layer, 'icon-opacity', [
+        'case', ['==', ['get', 'id'], selectedId], 1, 0.35,
+      ]);
+    } else if (layer === 'location-labels') {
+      map.setPaintProperty(layer, 'text-opacity', [
+        'case', ['==', ['get', 'id'], selectedId], 1, 0.35,
+      ]);
+    }
+  });
+}
+
+function restoreMarkerOpacity(map: Map): void {
+  if (!map) return;
+  const layers = ['location-markers', 'location-icons', 'location-labels'];
+  layers.forEach((layer) => {
+    if (!map.getLayer(layer)) return;
+    if (layer === 'location-markers') {
+      map.setPaintProperty(layer, 'circle-opacity', 1);
+    } else if (layer === 'location-icons') {
+      map.setPaintProperty(layer, 'icon-opacity', 1);
+    } else if (layer === 'location-labels') {
+      map.setPaintProperty(layer, 'text-opacity', 1);
+    }
+  });
+}
+
 /**
  * Main function to create and show a popup for a location
  * @param location - The location feature object
@@ -84,6 +119,9 @@ export async function createPopup(location: any, map: Map): Promise<Popup> {
 
   // Small delay to ensure DOM is clean before creating new popup
   await new Promise((resolve) => setTimeout(resolve, 50));
+
+  // Dim other markers
+  dimOtherMarkers(map, properties.id);
 
   // Only show sidebar for non-AR markers
   if (!isAR) {
@@ -171,6 +209,8 @@ export function closeActivePopup(): void {
     state.activePopup.remove();
     setActivePopup(null);
   }
+  // Restore all markers to full opacity
+  restoreMarkerOpacity(state.map);
 }
 
 //! ============= POPUP MANAGEMENT =============

@@ -707,6 +707,10 @@ html {
   gap: 0.3em;
   padding: 0.6em 0.75em;
   border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-white);
+  z-index: 1;
 }
 
 .sp-search-chip {
@@ -1222,7 +1226,7 @@ html {
     right: 0;
     width: 100vw;
     max-width: 100vw;
-    height: 55vh;
+    height: 47vh;
     border-radius: 1.2em 1.2em 0 0;
     box-shadow: 0 -1em 3em rgba(0, 0, 0, 0.15);
     transform: translateY(100%);
@@ -1284,7 +1288,7 @@ html {
   }
 
   .sp-hero__img {
-    height: 10em;
+    height: 7em;
   }
 
   .sp-hero__logo {

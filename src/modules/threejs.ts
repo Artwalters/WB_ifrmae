@@ -335,10 +335,7 @@ function applySignTextures(): void {
     if (logoUrl) {
       applyLogoWithWhiteBackground(mesh, logoUrl);
     } else {
-      const label = storeName
-        ? `${storeName} (no logo)`
-        : `${bordId}`;
-      mesh.material = createPlaceholderMaterial(label);
+      mesh.material = createPlaceholderMaterial(bordId);
     }
   });
 }

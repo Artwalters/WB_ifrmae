@@ -6,9 +6,9 @@ import { CONFIG } from './config.js';
 import { applyMapFilters } from './filters.js';
 import { setupLocationFilters } from './filters.js';
 import { addMarkers, loadIcons } from './markers.js';
-import { closeItem } from './popups.js';
+import { closeActivePopup, closeItem } from './popups.js';
 import { setupMobilePeek, setupMobileSearchBar } from './sidePanel.js';
-import { setActivePopup, state } from './state.js';
+import { state } from './state.js';
 
 // Global declaration for jQuery
 declare global {
@@ -183,7 +183,7 @@ export function setupMapInteractionHandlers(map: Map): void {
         }, 400);
       }
 
-      // Hide popup if visible
+      // Hide popup if visible (with animation), then restore marker opacity
       if (state.activePopup) {
         const popupContent = state.activePopup
           .getElement()
@@ -193,9 +193,11 @@ export function setupMapInteractionHandlers(map: Map): void {
         popupContent.style.opacity = '0';
 
         setTimeout(() => {
-          state.activePopup!.remove();
-          setActivePopup(null);
+          closeActivePopup();
         }, 400);
+      } else {
+        // Mobile: no popup exists, but markers may still be dimmed
+        closeActivePopup();
       }
     });
   });
@@ -223,10 +225,7 @@ export function setupMapInteractionHandlers(map: Map): void {
         }
 
         setTimeout(() => {
-          if (state.activePopup) {
-            state.activePopup.remove();
-            setActivePopup(null);
-          }
+          closeActivePopup();
         }, 400);
 
         // Also hide sidebar if visible
