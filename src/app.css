@@ -872,6 +872,7 @@ html {
   right: 0;
   bottom: 0;
   opacity: 0.45;
+  border-radius: 1.2em 1.2em 0 0;
 }
 
 /* Social icons on hero */
@@ -1013,6 +1014,7 @@ html {
   overflow-y: auto;
   flex: 1;
   -webkit-overflow-scrolling: touch;
+  border-radius: 0 0 1.2em 1.2em;
 }
 
 .sp-body::-webkit-scrollbar {
@@ -1252,12 +1254,17 @@ html {
     display: none;
   }
 
+  .sp-search-result__cat {
+    display: none;
+  }
+
   .mobile-search {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
+    font-size: 12px;
   }
 
   .mobile-search .sp-search-bar {
@@ -1266,9 +1273,11 @@ html {
     left: auto;
     right: auto;
     margin: 0.6em;
+    padding: 0.7em 0.8em;
     border-radius: 0.8em;
     background: var(--color-bg-white);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    font-size: 1.1em;
   }
 
   .mobile-search .sp-search-dropdown {
@@ -1493,16 +1502,14 @@ html {
   height: 5em;
   border: none;
   border-radius: 50%;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(240, 240, 240, 0.9));
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
   cursor: pointer;
   z-index: 999;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow:
-    0 0.2em 1em rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0.2em 1em var(--color-shadow);
   padding: 0;
   transition: box-shadow 0.2s ease, transform 0.15s ease;
   position: relative;
@@ -1518,7 +1525,7 @@ html {
 }
 
 .map-compass:hover {
-  background: linear-gradient(145deg, rgba(240, 240, 240, 0.95), rgba(225, 225, 225, 0.9));
+  background: rgba(240, 240, 240, 0.95);
 }
 
 .map-compass:active {

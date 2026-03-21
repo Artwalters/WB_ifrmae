@@ -114,11 +114,11 @@ function setupSearch(container: HTMLElement): void {
     if (!chipsContainer) {
       const chips = categories.map((cat) => {
         const active = activeCategories.has(cat.name);
-        return `<button class="sp-search-chip ${active ? 'is-active' : ''}" data-cat="${cat.name}" style="--cat-color: ${cat.color};">
+        return `<button class="sp-search-chip ${active ? 'is-active' : ''}" data-cat="${cat.name}" style="--cat-color: ${cat.color};" title="${formatCategory(cat.name)}">
           <span class="sp-search-chip__marker" style="background-color: ${cat.color};">
             ${cat.icon ? `<img src="${cat.icon}" alt="" />` : ''}
           </span>
-          ${formatCategory(cat.name)}
+          <span class="sp-search-chip__label">${formatCategory(cat.name)}</span>
         </button>`;
       }).join('');
 
