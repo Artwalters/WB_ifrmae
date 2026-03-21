@@ -1233,7 +1233,8 @@ html {
     box-shadow: 0 -1em 3em rgba(0, 0, 0, 0.15);
     transform: translateY(100%);
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: visible;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
     flex-direction: column;
   }
 
@@ -1293,24 +1294,7 @@ html {
   }
 
   .sp-toggle {
-    display: flex;
-    position: absolute;
-    top: -1.8em;
-    left: 1.5em;
-    right: auto;
-    transform: none;
-    width: 2.5em;
-    height: 1.8em;
-    border-radius: 0.5em 0.5em 0 0;
-    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .sp-toggle svg {
-    transform: rotate(-90deg);
-  }
-
-  .side-panel:not(.is-open) .sp-toggle svg {
-    transform: rotate(90deg);
+    display: none;
   }
 
   .sp-hero__img {
@@ -1367,10 +1351,9 @@ html {
   }
 
   .sp-body {
-    overflow-y: auto;
-    flex: 1;
+    overflow-y: visible;
+    flex: none;
     padding: 1em 1.25em;
-    -webkit-overflow-scrolling: touch;
   }
 
   .sp-hours h3 {
@@ -1449,6 +1432,72 @@ html {
   .sp-action svg {
     width: 0.9em;
     height: 0.9em;
+  }
+}
+
+/* Mobile panel wrapper + toggle */
+@media screen and (max-width: 767px) {
+  .side-panel-wrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 47vh;
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: visible;
+  }
+
+  .side-panel-wrapper.is-open {
+    transform: translateY(0);
+  }
+
+  .side-panel-wrapper.is-open.is-peeking {
+    transform: translateY(55%);
+  }
+
+  /* When inside wrapper, panel fills the wrapper and scrolls */
+  .side-panel-wrapper .side-panel {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    transition: none;
+  }
+
+  /* Toggle sits on wrapper, above panel */
+  .side-panel-wrapper .sp-toggle-mobile {
+    display: flex;
+    position: absolute;
+    top: -1.8em;
+    left: 1.5em;
+    width: 2.5em;
+    height: 1.8em;
+    border: none;
+    cursor: pointer;
+    border-radius: 0.5em 0.5em 0 0;
+    background: var(--color-bg);
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+    color: var(--color-text-muted);
+    z-index: 2;
+  }
+
+  .side-panel-wrapper .sp-toggle-mobile svg {
+    width: 1em;
+    height: 1em;
+    transform: rotate(-90deg);
+  }
+
+  .side-panel-wrapper:not(.is-open) .sp-toggle-mobile svg {
+    transform: rotate(90deg);
   }
 }
 

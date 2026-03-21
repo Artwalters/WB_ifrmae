@@ -7,6 +7,14 @@ import { state } from './state.js';
 let panelElement: HTMLElement | null = null;
 let mobileSearchElement: HTMLElement | null = null;
 
+/** On mobile the wrapper gets the is-open/is-peeking classes and transform */
+function getPanelTarget(): HTMLElement | null {
+  if (!panelElement) return null;
+  const wrapper = panelElement.parentElement;
+  if (wrapper?.classList.contains('side-panel-wrapper')) return wrapper;
+  return panelElement;
+}
+
 function formatCategory(cat: string): string {
   const s = cat.replace(/_/g, ' ').toLowerCase();
   return s.charAt(0).toUpperCase() + s.slice(1);
@@ -15,7 +23,16 @@ function formatCategory(cat: string): string {
 function createPanelElement(): HTMLElement {
   const panel = document.createElement('div');
   panel.className = 'side-panel';
-  document.body.appendChild(panel);
+
+  // On mobile, wrap the panel so the toggle can sit outside the scroll area
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'side-panel-wrapper';
+    wrapper.appendChild(panel);
+    document.body.appendChild(wrapper);
+  } else {
+    document.body.appendChild(panel);
+  }
 
   // Prevent wheel events from bubbling to the map so panel is scrollable
   panel.addEventListener('wheel', (e) => {
@@ -392,21 +409,33 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   panelElement.scrollTop = 0;
 
   // Force reflow before adding active class
-  panelElement.offsetHeight;
-  panelElement.classList.remove('is-peeking');
-  panelElement.classList.add('is-open');
+  const target = getPanelTarget()!;
+  target.offsetHeight;
+  target.classList.remove('is-peeking');
+  target.classList.add('is-open');
   updateCompassPosition('open');
 
   // Toggle button
   const toggleBtn = panelElement.querySelector('.sp-toggle') as HTMLElement;
+  const isMobileNow = window.matchMedia('(max-width: 767px)').matches;
+  const wrapper = panelElement.parentElement;
+
+  if (isMobileNow && wrapper?.classList.contains('side-panel-wrapper')) {
+    // Move toggle from panel to wrapper so it sits above the scrollable area
+    toggleBtn.remove();
+    wrapper.appendChild(toggleBtn);
+    toggleBtn.classList.add('sp-toggle-mobile');
+  }
+
   toggleBtn.addEventListener('click', () => {
-    if (panelElement?.classList.contains('is-open')) {
-      panelElement.classList.remove('is-open');
-      panelElement.classList.remove('is-peeking');
+    const t = getPanelTarget();
+    if (t?.classList.contains('is-open')) {
+      t.classList.remove('is-open');
+      t.classList.remove('is-peeking');
       updateCompassPosition('closed');
     } else {
-      panelElement?.classList.add('is-open');
-      panelElement?.classList.remove('is-peeking');
+      t?.classList.add('is-open');
+      t?.classList.remove('is-peeking');
       updateCompassPosition('open');
     }
   });
@@ -422,28 +451,28 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   if (dragHandle) {
     let touchStartY = 0;
     let panelStartTranslate = 0;
-    const panel = panelElement;
+    const dragTarget = getPanelTarget()!;
 
     dragHandle.addEventListener('touchstart', (e) => {
       touchStartY = e.touches[0].clientY;
       panelStartTranslate = 0;
-      panel.style.transition = 'none';
+      dragTarget.style.transition = 'none';
     });
 
     dragHandle.addEventListener('touchmove', (e) => {
       const dy = e.touches[0].clientY - touchStartY;
       if (dy > 0) {
         panelStartTranslate = dy;
-        panel.style.transform = `translateY(${dy}px)`;
+        dragTarget.style.transform = `translateY(${dy}px)`;
       }
     });
 
     dragHandle.addEventListener('touchend', () => {
-      panel.style.transition = '';
+      dragTarget.style.transition = '';
       if (panelStartTranslate > 100) {
         closeSidePanel();
       }
-      panel.style.transform = '';
+      dragTarget.style.transform = '';
     });
   }
 
@@ -520,9 +549,10 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 }
 
 export function closeSidePanel(): void {
-  if (panelElement) {
-    panelElement.classList.remove('is-open');
-    panelElement.classList.remove('is-peeking');
+  const target = getPanelTarget();
+  if (target) {
+    target.classList.remove('is-open');
+    target.classList.remove('is-peeking');
     updateCompassPosition('closed');
   }
   closeActivePopup();
@@ -550,8 +580,9 @@ export function setupMobilePeek(map: any): void {
   // When user interacts with the map, peek the panel down
   map.on('touchstart', () => {
     if (!isMobile() || !panelElement) return;
-    if (panelElement.classList.contains('is-open') && !panelElement.classList.contains('is-peeking')) {
-      panelElement.classList.add('is-peeking');
+    const target = getPanelTarget()!;
+    if (target.classList.contains('is-open') && !target.classList.contains('is-peeking')) {
+      target.classList.add('is-peeking');
       updateCompassPosition('peeking');
     }
   });
@@ -559,8 +590,9 @@ export function setupMobilePeek(map: any): void {
   // When user touches the panel, bring it back up
   document.addEventListener('touchstart', (e) => {
     if (!isMobile() || !panelElement) return;
-    if (panelElement.contains(e.target as Node) && panelElement.classList.contains('is-peeking')) {
-      panelElement.classList.remove('is-peeking');
+    const target = getPanelTarget()!;
+    if (target.contains(e.target as Node) && target.classList.contains('is-peeking')) {
+      target.classList.remove('is-peeking');
       updateCompassPosition('open');
     }
   });
