@@ -76,13 +76,19 @@ export async function createPopup(location: any, map: Map): Promise<Popup> {
     offset = [150, 180]; // Large screens - offset right for side panel
   }
 
-  // Fly to marker
-  map.flyTo({
+  // Fly to marker — on mobile, cap pitch so markers low on screen don't zoom out
+  const flyOptions: any = {
     center: coordinates,
     offset,
     duration: 800,
     essential: true,
-  });
+  };
+
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    flyOptions.pitch = Math.min(map.getPitch(), 45);
+  }
+
+  map.flyTo(flyOptions);
 
   // Handle existing sidebar items
   const visibleItem = window.$('.locations-map_item.is--show');

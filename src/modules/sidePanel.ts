@@ -402,9 +402,11 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   toggleBtn.addEventListener('click', () => {
     if (panelElement?.classList.contains('is-open')) {
       panelElement.classList.remove('is-open');
+      panelElement.classList.remove('is-peeking');
       updateCompassPosition('closed');
     } else {
       panelElement?.classList.add('is-open');
+      panelElement?.classList.remove('is-peeking');
       updateCompassPosition('open');
     }
   });
