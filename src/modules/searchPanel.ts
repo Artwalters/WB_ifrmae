@@ -2,6 +2,7 @@
 
 import { createPopup } from './popups.js';
 import { detectLanguage, translateCategory, uiTranslations } from './i18n.js';
+import { closeSidePanel } from './sidePanel.js';
 import { state } from './state.js';
 
 let panelElement: HTMLElement | null = null;
@@ -300,6 +301,11 @@ function createSearchButton(): HTMLElement {
     isOpen = !isOpen;
     panelElement.classList.toggle('is-open', isOpen);
     btn.classList.toggle('is-active', isOpen);
+
+    // On mobile, close the side panel when search opens
+    if (isOpen && window.matchMedia('(max-width: 767px)').matches) {
+      closeSidePanel();
+    }
   });
 
   return btn;

@@ -1468,6 +1468,12 @@ html {
     height: 100%;
     transform: none;
     transition: none;
+    box-shadow: none;
+  }
+
+  /* Shadow on the wrapper instead, so toggle sits above it */
+  .side-panel-wrapper {
+    box-shadow: 0 -0.5em 2em rgba(0, 0, 0, 0.12);
   }
 
   /* Toggle sits on wrapper, above panel */
@@ -1476,18 +1482,18 @@ html {
     position: absolute;
     top: -1.8em;
     left: 1.5em;
+    right: auto;
     width: 5.5em;
     height: 1.8em;
     border: none;
     cursor: pointer;
     border-radius: 0.5em 0.5em 0 0;
-    background: var(--color-bg);
     align-items: center;
     justify-content: center;
     padding: 0;
-    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
     background: #ffffff;
     color: #000000;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
     z-index: 2;
   }
 
@@ -2025,6 +2031,7 @@ html {
     border-radius: 1.2em 1.2em 0 0;
     box-shadow: 0 -0.25em 1.5em rgba(0, 0, 0, 0.15);
     transform: translateY(100%);
+    z-index: 1001;
   }
 
   .search-panel.is-open {
