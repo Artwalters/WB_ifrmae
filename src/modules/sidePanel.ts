@@ -1,6 +1,7 @@
 // Side panel module - shows location details on the left side
 
 import { createPopup, closeActivePopup } from './popups.js';
+import { detectLanguage, translateCategory, uiTranslations } from './i18n.js';
 import { getFilteredLocations, getUniqueCategories } from './searchPanel.js';
 import { state } from './state.js';
 
@@ -15,10 +16,6 @@ function getPanelTarget(): HTMLElement | null {
   return panelElement;
 }
 
-function formatCategory(cat: string): string {
-  const s = cat.replace(/_/g, ' ').toLowerCase();
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
 
 function createPanelElement(): HTMLElement {
   const panel = document.createElement('div');
@@ -42,14 +39,15 @@ function createPanelElement(): HTMLElement {
 }
 
 function generateOpeningHoursHTML(properties: any): string {
+  const t = uiTranslations[detectLanguage()];
   const days = [
-    { key: 'maandag', label: 'Ma' },
-    { key: 'dinsdag', label: 'Di' },
-    { key: 'woensdag', label: 'Wo' },
-    { key: 'donderdag', label: 'Do' },
-    { key: 'vrijdag', label: 'Vr' },
-    { key: 'zaterdag', label: 'Za' },
-    { key: 'zondag', label: 'Zo' },
+    { key: 'maandag', label: t.days.ma },
+    { key: 'dinsdag', label: t.days.di },
+    { key: 'woensdag', label: t.days.wo },
+    { key: 'donderdag', label: t.days.do },
+    { key: 'vrijdag', label: t.days.vr },
+    { key: 'zaterdag', label: t.days.za },
+    { key: 'zondag', label: t.days.zo },
   ];
 
   const hasHours = days.some((d) => properties[d.key]?.trim());
@@ -60,7 +58,7 @@ function generateOpeningHoursHTML(properties: any): string {
 
   let rows = '';
   days.forEach((day, i) => {
-    const hours = properties[day.key]?.trim() || 'Gesloten';
+    const hours = properties[day.key]?.trim() || t.closed;
     const isToday = i === todayIndex;
     rows += `<tr class="${isToday ? 'is-today' : ''}">
       <td>${day.label}</td>
@@ -70,7 +68,7 @@ function generateOpeningHoursHTML(properties: any): string {
 
   return `
     <div class="sp-hours">
-      <h3>Openingstijden</h3>
+      <h3>${t.openingHours}</h3>
       <table>${rows}</table>
     </div>`;
 }
@@ -97,14 +95,16 @@ const icons = {
   category: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>`,
 };
 
-const searchBarHTML = `
+function getSearchBarHTML(): string {
+  const t = uiTranslations[detectLanguage()];
+  return `
   <div class="sp-search-bar">
     <svg class="sp-search-bar__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="11" cy="11" r="8"></circle>
       <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
     </svg>
-    <input class="sp-search-bar__input" type="text" placeholder="Zoek een winkel..." />
-    <button class="sp-search-bar__clear" aria-label="Sluiten" style="display:none;">
+    <input class="sp-search-bar__input" type="text" placeholder="${t.searchPlaceholder}" />
+    <button class="sp-search-bar__clear" aria-label="${t.closeAriaLabel}" style="display:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -113,6 +113,7 @@ const searchBarHTML = `
   </div>
   <div class="sp-search-dropdown" style="display:none;"></div>
 `;
+}
 
 function setupSearch(container: HTMLElement): void {
   const searchInput = container.querySelector('.sp-search-bar__input') as HTMLInputElement;
@@ -131,11 +132,11 @@ function setupSearch(container: HTMLElement): void {
     if (!chipsContainer) {
       const chips = categories.map((cat) => {
         const active = activeCategories.has(cat.name);
-        return `<button class="sp-search-chip ${active ? 'is-active' : ''}" data-cat="${cat.name}" style="--cat-color: ${cat.color};" title="${formatCategory(cat.name)}">
+        return `<button class="sp-search-chip ${active ? 'is-active' : ''}" data-cat="${cat.name}" style="--cat-color: ${cat.color};" title="${translateCategory(cat.name)}">
           <span class="sp-search-chip__marker" style="background-color: ${cat.color};">
             ${cat.icon ? `<img src="${cat.icon}" alt="" />` : ''}
           </span>
-          <span class="sp-search-chip__label">${formatCategory(cat.name)}</span>
+          <span class="sp-search-chip__label">${translateCategory(cat.name)}</span>
         </button>`;
       }).join('');
 
@@ -178,12 +179,12 @@ function setupSearch(container: HTMLElement): void {
         </div>
         <div class="sp-search-result__info">
           <span class="sp-search-result__name">${p.name}</span>
-          <span class="sp-search-result__cat">${p.category ? formatCategory(p.category) : ''}</span>
+          <span class="sp-search-result__cat">${p.category ? translateCategory(p.category) : ''}</span>
         </div>
       </button>`;
     }).join('');
 
-    resultsContainer.innerHTML = results || '<div class="sp-search-empty">Geen winkels gevonden</div>';
+    resultsContainer.innerHTML = results || `<div class="sp-search-empty">${uiTranslations[detectLanguage()].noResults}</div>`;
 
     resultsContainer.querySelectorAll('.sp-search-result').forEach((item) => {
       item.addEventListener('click', () => {
@@ -249,7 +250,7 @@ export function setupMobileSearchBar(): void {
 
   mobileSearchElement = document.createElement('div');
   mobileSearchElement.className = 'mobile-search';
-  mobileSearchElement.innerHTML = searchBarHTML;
+  mobileSearchElement.innerHTML = getSearchBarHTML();
   document.body.appendChild(mobileSearchElement);
 
   setupSearch(mobileSearchElement);
@@ -339,7 +340,7 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
             <div class="sp-similar__color-overlay" style="background-color: ${c};"></div>
           </div>
           <span class="sp-similar__name">${p.name}</span>
-          <span class="sp-similar__cat">${p.category ? formatCategory(p.category) : ''}</span>
+          <span class="sp-similar__cat">${p.category ? translateCategory(p.category) : ''}</span>
         </button>`;
     });
 
@@ -349,7 +350,7 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
           <span class="sp-similar__marker" style="background-color: ${catColor};">
             ${catIcon ? `<img src="${catIcon}" alt="" />` : ''}
           </span>
-          ${formatCategory(cat)}
+          ${translateCategory(cat)}
         </h3>
         <div class="sp-similar__list">${cards}</div>
       </div>`;
@@ -358,7 +359,7 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   if (categorySliders) {
     sections += `
       <div class="sp-discover">
-        <h3 class="sp-discover__heading">Ontdek meer winkels</h3>
+        <h3 class="sp-discover__heading">${uiTranslations[detectLanguage()].discoverMore}</h3>
         ${categorySliders}
       </div>`;
   }
@@ -380,8 +381,8 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input class="sp-search-bar__input" type="text" placeholder="Zoek een winkel..." />
-        <button class="sp-search-bar__clear" aria-label="Sluiten" style="display:none;">
+        <input class="sp-search-bar__input" type="text" placeholder="${uiTranslations[detectLanguage()].searchPlaceholder}" />
+        <button class="sp-search-bar__clear" aria-label="${uiTranslations[detectLanguage()].closeAriaLabel}" style="display:none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -391,7 +392,7 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       <div class="sp-search-dropdown" style="display:none;"></div>
     </div>` : ''}
     <div class="sp-head">
-      ${properties.category ? `<span class="sp-head__cat" style="color: ${color};">${formatCategory(properties.category)}</span>` : ''}
+      ${properties.category ? `<span class="sp-head__cat" style="color: ${color};">${translateCategory(properties.category)}</span>` : ''}
       <h2 class="sp-head__name">${properties.name}</h2>
       ${actionLinks ? `<div class="sp-action-links">${actionLinks}</div>` : ''}
     </div>

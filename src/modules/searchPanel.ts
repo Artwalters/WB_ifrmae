@@ -1,16 +1,13 @@
 // Search panel module - search and filter businesses
 
 import { createPopup } from './popups.js';
+import { detectLanguage, translateCategory, uiTranslations } from './i18n.js';
 import { state } from './state.js';
 
 let panelElement: HTMLElement | null = null;
 let buttonElement: HTMLElement | null = null;
 let isOpen = false;
 
-function formatCategory(cat: string): string {
-  const s = cat.replace(/_/g, ' ').toLowerCase();
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
 
 interface CategoryInfo {
   name: string;
@@ -144,7 +141,7 @@ function renderList(container: HTMLElement, query: string, activeCategories: Set
   const locations = getFilteredLocations(query, activeCategories);
 
   if (locations.length === 0) {
-    container.innerHTML = '<div class="search-empty">Geen winkels gevonden</div>';
+    container.innerHTML = `<div class="search-empty">${uiTranslations[detectLanguage()].noResults}</div>`;
     return;
   }
 
@@ -158,7 +155,7 @@ function renderList(container: HTMLElement, query: string, activeCategories: Set
         </div>
         <div class="search-item__info">
           <span class="search-item__name">${p.name}</span>
-          <span class="search-item__cat">${p.category ? formatCategory(p.category) : ''}</span>
+          <span class="search-item__cat">${p.category ? translateCategory(p.category) : ''}</span>
         </div>
       </button>`;
   }).join('');
@@ -188,7 +185,7 @@ function renderFilters(container: HTMLElement, activeCategories: Set<string>, on
 
   container.innerHTML = `
     <div class="search-filters__header">
-      <span class="search-filters__title">Categorieën</span>
+      <span class="search-filters__title">${uiTranslations[detectLanguage()].categories}</span>
       <button class="search-filters__close">&times;</button>
     </div>
     <div class="search-filters__list">
@@ -198,7 +195,7 @@ function renderFilters(container: HTMLElement, activeCategories: Set<string>, on
           <span class="search-filter-item__marker" style="background-color: ${cat.color};">
             ${cat.icon ? `<img src="${cat.icon}" alt="" />` : ''}
           </span>
-          <span class="search-filter-item__label">${formatCategory(cat.name)}</span>
+          <span class="search-filter-item__label">${translateCategory(cat.name)}</span>
         </label>
       `).join('')}
     </div>
@@ -236,9 +233,9 @@ function createPanel(): HTMLElement {
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input type="text" class="search-panel__input" placeholder="Zoek een winkel..." />
+        <input type="text" class="search-panel__input" placeholder="${uiTranslations[detectLanguage()].searchPlaceholder}" />
       </div>
-      <button class="search-panel__settings" aria-label="Filter op categorie">
+      <button class="search-panel__settings" aria-label="${uiTranslations[detectLanguage()].filterAriaLabel}">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="4" y1="21" x2="4" y2="14"></line>
           <line x1="4" y1="10" x2="4" y2="3"></line>
@@ -286,7 +283,7 @@ function createPanel(): HTMLElement {
 function createSearchButton(): HTMLElement {
   const btn = document.createElement('button');
   btn.className = 'search-btn';
-  btn.setAttribute('aria-label', 'Zoek winkels');
+  btn.setAttribute('aria-label', uiTranslations[detectLanguage()].searchAriaLabel);
   btn.innerHTML = `
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="11" cy="11" r="8"></circle>
