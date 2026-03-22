@@ -1,9 +1,27 @@
 // Shared language detection and translations
 
 export function detectLanguage(): 'nl' | 'en' | 'de' {
+  // 1. Check query parameter (for iframe embedding: ?lang=de)
+  const params = new URLSearchParams(window.location.search);
+  const langParam = params.get('lang');
+  if (langParam === 'en' || langParam === 'de') return langParam;
+
+  // 2. Check URL path (for direct Webflow usage: /en/, /de/)
   const path = window.location.pathname;
   if (path.includes('/en/')) return 'en';
   if (path.includes('/de/')) return 'de';
+
+  // 3. Check parent URL if in iframe (same-origin only)
+  try {
+    if (window.parent !== window) {
+      const parentPath = window.parent.location.pathname;
+      if (parentPath.includes('/en/')) return 'en';
+      if (parentPath.includes('/de/')) return 'de';
+    }
+  } catch {
+    // Cross-origin iframe — parent not accessible, rely on query param
+  }
+
   return 'nl';
 }
 

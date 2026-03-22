@@ -288,6 +288,22 @@ export function getARData(): void {
 }
 
 /**
+ * Preload all logo and hero images into the browser cache
+ */
+function preloadImages(): void {
+  const urls = new Set<string>();
+  state.mapLocations.features.forEach((f) => {
+    const p = f.properties as any;
+    if (p.logo_wb) urls.add(p.logo_wb);
+    if (p.image) urls.add(p.image);
+  });
+  urls.forEach((url) => {
+    const img = new Image();
+    img.src = url;
+  });
+}
+
+/**
  * Main function to load all location data
  */
 export async function loadLocationData(): Promise<typeof state.mapLocations> {
@@ -297,6 +313,9 @@ export async function loadLocationData(): Promise<typeof state.mapLocations> {
   // Load both types of data
   getGeoData();
   getARData();
+
+  // Preload logos and images so they're cached before popups open
+  preloadImages();
 
   // Return the loaded data
   return state.mapLocations;

@@ -1306,8 +1306,8 @@ html {
     position: absolute;
     top: 0.5em;
     left: 0.5em;
-    max-width: 6em;
-    max-height: 4.5em;
+    max-width: 8em;
+    max-height: 6em;
     object-fit: contain;
     background: var(--color-bg-white);
     border-radius: 0.4em;
@@ -1476,7 +1476,7 @@ html {
     position: absolute;
     top: -1.8em;
     left: 1.5em;
-    width: 2.5em;
+    width: 5.5em;
     height: 1.8em;
     border: none;
     cursor: pointer;
@@ -1486,7 +1486,8 @@ html {
     justify-content: center;
     padding: 0;
     box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
-    color: var(--color-text-muted);
+    background: #ffffff;
+    color: #000000;
     z-index: 2;
   }
 
