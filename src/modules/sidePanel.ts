@@ -282,11 +282,11 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   }
 
   if (coordinates) {
-    actionLinks += `<a class="sp-action-link" href="https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}" target="_blank" rel="noopener">${icons.navigate}<span>Navigeer</span></a>`;
+    actionLinks += `<a class="sp-action-link" href="https://www.google.com/maps/dir/?api=1&destination=${coordinates[1]},${coordinates[0]}" target="_blank" rel="noopener">${icons.navigate}<span>${uiTranslations[detectLanguage()].navigate}</span></a>`;
   }
 
   if (properties.website) {
-    actionLinks += `<a class="sp-action-link" href="${properties.website}" target="_blank" rel="noopener">${icons.website}<span>Website</span></a>`;
+    actionLinks += `<a class="sp-action-link" href="${properties.website}" target="_blank" rel="noopener">${icons.website}<span>${uiTranslations[detectLanguage()].website}</span></a>`;
   }
 
   // Build body sections

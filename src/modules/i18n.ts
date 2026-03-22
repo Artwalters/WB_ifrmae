@@ -37,6 +37,8 @@ export const uiTranslations = {
     openingHours: 'Openingstijden',
     closed: 'Gesloten',
     discoverMore: 'Ontdek meer winkels',
+    navigate: 'Navigeer',
+    website: 'Website',
     days: { ma: 'Ma', di: 'Di', wo: 'Wo', do: 'Do', vr: 'Vr', za: 'Za', zo: 'Zo' },
   },
   en: {
@@ -49,6 +51,8 @@ export const uiTranslations = {
     openingHours: 'Opening hours',
     closed: 'Closed',
     discoverMore: 'Discover more stores',
+    navigate: 'Navigate',
+    website: 'Website',
     days: { ma: 'Mon', di: 'Tue', wo: 'Wed', do: 'Thu', vr: 'Fri', za: 'Sat', zo: 'Sun' },
   },
   de: {
@@ -61,6 +65,8 @@ export const uiTranslations = {
     openingHours: 'Öffnungszeiten',
     closed: 'Geschlossen',
     discoverMore: 'Mehr Geschäfte entdecken',
+    navigate: 'Navigieren',
+    website: 'Webseite',
     days: { ma: 'Mo', di: 'Di', wo: 'Mi', do: 'Do', vr: 'Fr', za: 'Sa', zo: 'So' },
   },
 };
