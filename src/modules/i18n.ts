@@ -39,6 +39,7 @@ export const uiTranslations = {
     discoverMore: 'Ontdek meer winkels',
     navigate: 'Navigeer',
     website: 'Website',
+    call: 'Bellen',
     days: { ma: 'Ma', di: 'Di', wo: 'Wo', do: 'Do', vr: 'Vr', za: 'Za', zo: 'Zo' },
   },
   en: {
@@ -53,6 +54,7 @@ export const uiTranslations = {
     discoverMore: 'Discover more stores',
     navigate: 'Navigate',
     website: 'Website',
+    call: 'Call',
     days: { ma: 'Mon', di: 'Tue', wo: 'Wed', do: 'Thu', vr: 'Fri', za: 'Sat', zo: 'Sun' },
   },
   de: {
@@ -67,6 +69,7 @@ export const uiTranslations = {
     discoverMore: 'Mehr Geschäfte entdecken',
     navigate: 'Navigieren',
     website: 'Webseite',
+    call: 'Anrufen',
     days: { ma: 'Mo', di: 'Di', wo: 'Mi', do: 'Do', vr: 'Fr', za: 'Sa', zo: 'So' },
   },
 };

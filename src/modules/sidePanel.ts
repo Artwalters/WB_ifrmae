@@ -278,7 +278,7 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   let actionLinks = '';
 
   if (properties.telefoonummer) {
-    actionLinks += `<a class="sp-action-link" href="tel:${properties.telefoonummer.replace(/\s/g, '')}">${icons.phone}<span>Bellen</span></a>`;
+    actionLinks += `<a class="sp-action-link" href="tel:${properties.telefoonummer.replace(/\s/g, '')}">${icons.phone}<span>${uiTranslations[detectLanguage()].call}</span></a>`;
   }
 
   if (coordinates) {
