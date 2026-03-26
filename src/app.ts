@@ -30,7 +30,7 @@ import { eventBus, Events } from './modules/eventBus.js';
 import { resourceManager } from './modules/resourceManager.js';
 import { initCompass } from './modules/compass.js';
 import { initSearchPanel } from './modules/searchPanel.js';
-import { initClipHelper } from './modules/clipHelper.js';
+
 import { initHelpButton } from './modules/helpButton.js';
 
 // Extend global Window interface
@@ -85,7 +85,7 @@ window.Webflow.push(async (): Promise<void> => {
     // Initialize compass and search panel
     initCompass(map);
     initSearchPanel();
-    initClipHelper(map);
+
     initHelpButton();
 
     // Emit map loaded event
