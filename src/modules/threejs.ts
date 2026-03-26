@@ -57,7 +57,7 @@ const modelConfigs: ModelConfig[] = [
     origin: [50.898577, 5.948917],
     altitude: 0,
     rotate: [Math.PI / 2, 5.76, 0],
-    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/plein3_logomap.glb',
+    url: 'https://heerlen-doen.b-cdn.net/models_draco_logomap/plein3_logomapv2.glb',
     scale: 0.235,
     materials: {
       base: '#ece6d7',

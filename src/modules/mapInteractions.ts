@@ -97,6 +97,68 @@ export function setupMapLoadHandler(map: Map): void {
         } as any);
       }
 
+      // Clip layer for gebouw bij Plein 3
+      if (!map.getSource('plein3-clip')) {
+        map.addSource('plein3-clip', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [5.950492, 50.896437],
+                  [5.951419, 50.895916],
+                  [5.950478, 50.895435],
+                  [5.949507, 50.895946],
+                  [5.950492, 50.896437], // Close polygon
+                ],
+              ],
+            },
+          },
+        });
+      }
+
+      if (!map.getLayer('plein3-clip-layer')) {
+        map.addLayer({
+          id: 'plein3-clip-layer',
+          type: 'clip',
+          source: 'plein3-clip',
+          minzoom: 15,
+        } as any);
+      }
+
+      // Clip layer for gebouw noordwest
+      if (!map.getSource('noordwest-clip')) {
+        map.addSource('noordwest-clip', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [5.938704, 50.901525],
+                  [5.938202, 50.900857],
+                  [5.939259, 50.900481],
+                  [5.939760, 50.901048],
+                  [5.938704, 50.901525], // Close polygon
+                ],
+              ],
+            },
+          },
+        });
+      }
+
+      if (!map.getLayer('noordwest-clip-layer')) {
+        map.addLayer({
+          id: 'noordwest-clip-layer',
+          type: 'clip',
+          source: 'noordwest-clip',
+          minzoom: 15,
+        } as any);
+      }
+
       // Move marker layers to top so they appear above 3D buildings
       if (map.getLayer('location-markers')) {
         map.moveLayer('location-markers');
