@@ -5,26 +5,26 @@ import { detectLanguage } from './i18n.js'
 
 const isMobile = () => window.matchMedia('(max-width: 767px)').matches
 
-// Phosphor Icons (MIT license) — professional gesture illustrations
+// Tabler Icons (MIT license) — clean, thin-stroke gesture illustrations
 const icons = {
-  // Hand tap — finger pointing down with tap indicator
-  tap: `<svg class="guide-icon" viewBox="0 0 256 256" fill="currentColor"><path d="M56,76a60,60,0,0,1,120,0,8,8,0,0,1-16,0,44,44,0,0,0-88,0,8,8,0,1,1-16,0Zm140,44a27.9,27.9,0,0,0-13.36,3.39A28,28,0,0,0,144,106.7V76a28,28,0,0,0-56,0v80l-3.82-6.13a28,28,0,0,0-48.41,28.17l29.32,50A8,8,0,1,0,78.89,220L49.6,170a12,12,0,1,1,20.78-12l.14.23,18.68,30A8,8,0,0,0,104,184V76a12,12,0,0,1,24,0v68a8,8,0,1,0,16,0V132a12,12,0,0,1,24,0v20a8,8,0,0,0,16,0v-4a12,12,0,0,1,24,0v36c0,21.61-7.1,36.3-7.16,36.42a8,8,0,0,0,3.58,10.73A7.9,7.9,0,0,0,208,232a8,8,0,0,0,7.16-4.42c.37-.73,8.85-18,8.85-43.58V148A28,28,0,0,0,196,120Z"/></svg>`,
+  // Hand tap — finger pointing with click indicators
+  tap: `<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13v-8.5a1.5 1.5 0 0 1 3 0v7.5"/><path d="M11 11.5v-2a1.5 1.5 0 0 1 3 0v2.5"/><path d="M14 10.5a1.5 1.5 0 0 1 3 0v1.5"/><path d="M17 11.5a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7l-.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47"/><path d="M5 3l-1 -1"/><path d="M4 7h-1"/><path d="M14 3l1 -1"/><path d="M15 6h1"/></svg>`,
   // Hand grabbing — dragging gesture
-  drag: `<svg class="guide-icon" viewBox="0 0 256 256" fill="currentColor"><path d="M188,80a27.79,27.79,0,0,0-13.36,3.4,28,28,0,0,0-46.64-11A28,28,0,0,0,80,92v20H68a28,28,0,0,0-28,28v12a88,88,0,0,0,176,0V108A28,28,0,0,0,188,80Zm12,72a72,72,0,0,1-144,0V140a12,12,0,0,1,12-12H80v24a8,8,0,0,0,16,0V92a12,12,0,0,1,24,0v28a8,8,0,0,0,16,0V92a12,12,0,0,1,24,0v28a8,8,0,0,0,16,0V108a12,12,0,0,1,24,0Z"/></svg>`,
-  // Hand swipe right — mobile drag with direction arrow
-  dragMobile: `<svg class="guide-icon" viewBox="0 0 256 256" fill="currentColor"><path d="M216,140v36c0,25.59-8.49,42.85-8.85,43.58A8,8,0,0,1,200,224a7.9,7.9,0,0,1-3.57-.85,8,8,0,0,1-3.58-10.73c.06-.12,7.16-14.81,7.16-36.42V140a12,12,0,0,0-24,0v4a8,8,0,0,1-16,0V124a12,12,0,0,0-24,0v12a8,8,0,0,1-16,0V68a12,12,0,0,0-24,0V176a8,8,0,0,1-14.79,4.23l-18.68-30-.14-.23A12,12,0,1,0,41.6,162L70.89,212A8,8,0,1,1,57.08,220l-29.32-50a28,28,0,0,1,48.41-28.17L80,148V68a28,28,0,0,1,56,0V98.7a28,28,0,0,1,38.65,16.69A28,28,0,0,1,216,140Zm37.66-89.66-32-32a8,8,0,0,0-11.31,11.32L228.68,48H176a8,8,0,0,0,0,16h52.69L210.34,82.34a8,8,0,0,0,11.31,11.32l32-32A8,8,0,0,0,253.66,50.34Z"/></svg>`,
-  // Mouse with right button highlighted — right-click rotate
-  rightClick: `<svg class="guide-icon" viewBox="0 0 256 256" fill="currentColor"><path d="M144,16H112A64.07,64.07,0,0,0,48,80v96a64.07,64.07,0,0,0,64,64h32a64.07,64.07,0,0,0,64-64V80A64.07,64.07,0,0,0,144,16Zm48,160a48.05,48.05,0,0,1-48,48H112a48.05,48.05,0,0,1-48-48V80a48.05,48.05,0,0,1,48-48h8v72a8,8,0,0,0,16,0V32h8a48.05,48.05,0,0,1,48,48Z"/><circle cx="152" cy="60" r="12" fill="#e53935"/></svg>`,
-  // Two finger rotate — Phosphor ArrowsClockwise (rotation concept)
-  twoFingerRotate: `<svg class="guide-icon" viewBox="0 0 256 256" fill="currentColor"><path d="M224,48V96a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h28.69L168,59.31A80,80,0,0,0,48.2,137.34a8,8,0,0,1-15.88-2.06A96,96,0,0,1,179.31,48L208,77.31V48a8,8,0,0,1,16,0ZM223.69,120.68a8,8,0,0,0-7.81,1.46l-.11.1a8,8,0,0,0-2.09,5.14,80,80,0,0,1-125.87,59.31L116.49,168H88a8,8,0,0,1,0-16h48a8,8,0,0,1,8,8v48a8,8,0,0,1-16,0V179.31L99.31,208A96,96,0,0,0,223.69,120.68Z"/></svg>`,
+  drag: `<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11v-3.5a1.5 1.5 0 0 1 3 0v2.5"/><path d="M11 9.5v-3a1.5 1.5 0 0 1 3 0v3.5"/><path d="M14 7.5a1.5 1.5 0 0 1 3 0v2.5"/><path d="M17 9.5a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7l-.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47"/></svg>`,
+  // Hand with movement arrows — mobile drag gesture
+  dragMobile: `<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13v-8.5a1.5 1.5 0 0 1 3 0v7.5"/><path d="M11 11.5v-2a1.5 1.5 0 0 1 3 0v2.5"/><path d="M14 10.5a1.5 1.5 0 0 1 3 0v1.5"/><path d="M17 11.5a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1 -6 6h-2h.208a6 6 0 0 1 -5.012 -2.7l-.196 -.3c-.312 -.479 -1.407 -2.388 -3.286 -5.728a1.5 1.5 0 0 1 .536 -2.022a1.867 1.867 0 0 1 2.28 .28l1.47 1.47"/><path d="M2.541 5.594a13.487 13.487 0 0 1 2.46 -1.427"/><path d="M14 3.458c1.32 .354 2.558 .902 3.685 1.612"/></svg>`,
+  // Mouse with right button indicator — right-click rotate
+  rightClick: `<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-4a4 4 0 0 1 -4 -4l0 -10"/><path d="M12 7l0 4"/><circle cx="15" cy="6" r="1" fill="#e53935" stroke="#e53935"/></svg>`,
+  // Two finger rotate — rotation arrows
+  twoFingerRotate: `<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4.55a8 8 0 0 0 -6 14.9m0 -4.45v5h-5"/><path d="M18.37 7.16l0 .01"/><path d="M13 19.94l0 .01"/><path d="M16.84 18.37l0 .01"/><path d="M19.37 15.1l0 .01"/><path d="M19.94 11l0 .01"/></svg>`,
   // Compass with north arrow
-  compass: `<svg class="guide-icon" viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z"/><polygon points="128,72 148,152 128,140 108,152" fill="#e53935"/><polygon points="128,184 108,104 128,116 148,104" opacity="0.4"/></svg>`,
-  // Mouse with scroll wheel + arrows
-  scrollWheel: `<svg class="guide-icon" viewBox="0 0 256 256" fill="currentColor"><path d="M144,16H112A64.07,64.07,0,0,0,48,80v96a64.07,64.07,0,0,0,64,64h32a64.07,64.07,0,0,0,64-64V80A64.07,64.07,0,0,0,144,16Zm48,160a48.05,48.05,0,0,1-48,48H112a48.05,48.05,0,0,1-48-48V80a48.05,48.05,0,0,1,48-48h32a48.05,48.05,0,0,1,48,48ZM136,83.31v89.38l10.34-10.35a8,8,0,0,1,11.32,11.32l-24,24a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L120,172.69V83.31L109.66,93.66A8,8,0,0,1,98.34,82.34l24-24a8,8,0,0,1,11.32,0l24,24a8,8,0,0,1-11.32,11.32Z"/></svg>`,
-  // Pinch zoom — Phosphor ArrowsIn (pinch/zoom concept)
-  pinchZoom: `<svg class="guide-icon" viewBox="0 0 256 256" fill="currentColor"><path d="M144,104V64a8,8,0,0,1,16,0V84.69l42.34-42.35a8,8,0,0,1,11.32,11.32L171.31,96H192a8,8,0,0,1,0,16H152A8,8,0,0,1,144,104Zm-40,40H64a8,8,0,0,0,0,16H84.69L42.34,202.34a8,8,0,0,0,11.32,11.32L96,171.31V192a8,8,0,0,0,16,0V152A8,8,0,0,0,104,144Zm-61.66-2.34a8,8,0,0,0,11.32,0L96,99.31V120a8,8,0,0,0,16,0V80a8,8,0,0,0-8-8H64a8,8,0,0,0,0,16H84.69L42.34,130.34A8,8,0,0,0,42.34,141.66Zm171.32-27.32a8,8,0,0,0-11.32,0L160,156.69V136a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8h40a8,8,0,0,0,0-16H171.31l42.35-42.34A8,8,0,0,0,213.66,114.34Z"/></svg>`,
+  compass: `<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="12,5 14,12 12,11 10,12" fill="#e53935" stroke="none"/><polygon points="12,19 10,12 12,13 14,12" fill="currentColor" stroke="none" opacity="0.3"/></svg>`,
+  // Mouse with scroll line — scroll wheel zoom
+  scrollWheel: `<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v10a4 4 0 0 1 -4 4h-4a4 4 0 0 1 -4 -4l0 -10"/><path d="M12 7l0 4"/><path d="M9 2l3 -2l3 2"/><path d="M9 22l3 2l3 -2"/></svg>`,
+  // Expand arrows — pinch zoom concept
+  pinchZoom: `<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4l4 0l0 4"/><path d="M14 10l6 -6"/><path d="M8 20l-4 0l0 -4"/><path d="M4 20l6 -6"/><path d="M16 20l4 0l0 -4"/><path d="M14 14l6 6"/><path d="M8 4l-4 0l0 4"/><path d="M4 4l6 6"/></svg>`,
   // Magnifying glass — search
-  search: `<svg class="guide-icon" viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"/></svg>`,
+  search: `<svg class="guide-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><path d="M21 21l-6 -6"/></svg>`,
 }
 
 interface GuideStep {
@@ -125,11 +125,18 @@ const guideTexts: Record<string, GuideTexts> = {
         position: 'center',
       },
       {
+        title: 'Gebruik het kompas',
+        text: 'Tik op het kompas om de kaart stap voor stap te draaien. De rode pijl wijst altijd naar het noorden.',
+        icon: icons.compass,
+        target: '.map-compass',
+        position: 'left',
+      },
+      {
         title: 'Zoom in en uit',
-        text: 'Knijp met twee vingers om in en uit te zoomen.',
+        text: 'Gebruik de + en − knoppen of knijp met twee vingers om in en uit te zoomen.',
         icon: icons.pinchZoom,
-        target: '.mapboxgl-canvas',
-        position: 'center',
+        target: '.map-zoom',
+        position: 'left',
       },
       {
         title: 'Zoek een winkel',
@@ -216,11 +223,18 @@ const guideTexts: Record<string, GuideTexts> = {
         position: 'center',
       },
       {
+        title: 'Use the compass',
+        text: 'Tap the compass to rotate the map step by step. The red arrow always points north.',
+        icon: icons.compass,
+        target: '.map-compass',
+        position: 'left',
+      },
+      {
         title: 'Zoom in and out',
-        text: 'Pinch with two fingers to zoom in and out.',
+        text: 'Use the + and − buttons or pinch with two fingers to zoom in and out.',
         icon: icons.pinchZoom,
-        target: '.mapboxgl-canvas',
-        position: 'center',
+        target: '.map-zoom',
+        position: 'left',
       },
       {
         title: 'Search for a store',
@@ -307,11 +321,18 @@ const guideTexts: Record<string, GuideTexts> = {
         position: 'center',
       },
       {
+        title: 'Den Kompass verwenden',
+        text: 'Tippen Sie auf den Kompass, um die Karte schrittweise zu drehen. Der rote Pfeil zeigt immer nach Norden.',
+        icon: icons.compass,
+        target: '.map-compass',
+        position: 'left',
+      },
+      {
         title: 'Hinein- und herauszoomen',
-        text: 'Kneifen Sie mit zwei Fingern, um hinein- und herauszuzoomen.',
+        text: 'Verwenden Sie die + und − Tasten oder kneifen Sie mit zwei Fingern, um hinein- und herauszuzoomen.',
         icon: icons.pinchZoom,
-        target: '.mapboxgl-canvas',
-        position: 'center',
+        target: '.map-zoom',
+        position: 'left',
       },
       {
         title: 'Geschäft suchen',
@@ -347,10 +368,10 @@ function positionTooltip(step: GuideStep): void {
   tooltip.removeAttribute('data-pos')
 
   if (isMobile()) {
-    // On mobile: tooltip at bottom
-    tooltip.style.top = ''
-    tooltip.style.left = ''
-    tooltip.style.transform = ''
+    // On mobile: tooltip centered
+    tooltip.style.top = '50%'
+    tooltip.style.left = '50%'
+    tooltip.style.transform = 'translate(-50%, -50%)'
   } else {
     // On desktop: tooltip centered
     tooltip.style.top = '50%'
@@ -436,7 +457,14 @@ export function initHelpButton(): void {
   btn.className = 'help-btn'
   btn.setAttribute('aria-label', t.welcome)
   btn.innerHTML = '?'
-  document.body.appendChild(btn)
+
+  // On mobile: place inside map-controls (above compass), on desktop: fixed position
+  const mapControls = document.querySelector('.map-controls')
+  if (isMobile() && mapControls) {
+    mapControls.prepend(btn)
+  } else {
+    document.body.appendChild(btn)
+  }
 
   overlay = document.createElement('div')
   overlay.className = 'guide-overlay'
