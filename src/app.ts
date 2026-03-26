@@ -31,6 +31,7 @@ import { resourceManager } from './modules/resourceManager.js';
 import { initCompass } from './modules/compass.js';
 import { initSearchPanel } from './modules/searchPanel.js';
 import { initClipHelper } from './modules/clipHelper.js';
+import { initHelpButton } from './modules/helpButton.js';
 
 // Extend global Window interface
 declare global {
@@ -85,6 +86,7 @@ window.Webflow.push(async (): Promise<void> => {
     initCompass(map);
     initSearchPanel();
     initClipHelper(map);
+    initHelpButton();
 
     // Emit map loaded event
     eventBus.emit(Events.MAP_LOADED, map);
