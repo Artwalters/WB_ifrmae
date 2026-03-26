@@ -6,7 +6,7 @@ import { CONFIG } from './config.js';
 import { applyMapFilters } from './filters.js';
 import { setupLocationFilters } from './filters.js';
 import { addMarkers, loadIcons } from './markers.js';
-import { closeActivePopup, closeItem } from './popups.js';
+import { closeActivePopup, closeItem, createPopup } from './popups.js';
 import { setupMobilePeek, setupMobileSearchBar } from './sidePanel.js';
 import { state } from './state.js';
 
@@ -189,10 +189,19 @@ export function setupMapLoadHandler(map: Map): void {
     // Setup mobile search bar (always visible)
     setupMobileSearchBar();
 
-    // Initial animation on load - Woonboulevard
+    // Initial animation on load - fly smoothly to Parking Plein 3
     const finalZoom = window.matchMedia('(max-width: 479px)').matches ? 16.5 : 17;
     const startCoords: [number, number] = [5.935, 50.905];
-    const destinationCoords: [number, number] = [5.945293, 50.898646];
+
+    // Find Parking Plein 3 in loaded locations
+    const parkingFeature = state.mapLocations.features.find(
+      (f: any) => f.properties.name?.toLowerCase().includes('parking plein 3')
+        || f.properties.name?.toLowerCase().includes('parkeerplaats plein 3')
+    );
+
+    const destinationCoords: [number, number] = parkingFeature
+      ? parkingFeature.geometry.coordinates.slice() as [number, number]
+      : [5.950, 50.896];
 
     map.jumpTo({
       center: startCoords,
@@ -209,6 +218,13 @@ export function setupMapLoadHandler(map: Map): void {
       duration: 6000,
       essential: true,
       easing: (t: number) => t * (2 - t),
+    });
+
+    // After fly-to completes, open popup and side panel
+    map.once('moveend', () => {
+      if (parkingFeature) {
+        createPopup(parkingFeature, map);
+      }
     });
   });
 }
