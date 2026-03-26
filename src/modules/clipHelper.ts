@@ -7,8 +7,13 @@ let active = false
 let panel: HTMLElement | null = null
 let toggleBtn: HTMLElement | null = null
 let coordsList: HTMLElement | null = null
-let crosshair: HTMLElement | null = null
 const history: [number, number][] = []
+
+const copyVal = (btn: HTMLElement, value: string) => {
+  navigator.clipboard.writeText(value)
+  btn.classList.add('is-copied')
+  setTimeout(() => btn.classList.remove('is-copied'), 1500)
+}
 
 export function initClipHelper(map: Map): void {
   // Toggle button
@@ -17,12 +22,6 @@ export function initClipHelper(map: Map): void {
   toggleBtn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="6"/></svg>`
   toggleBtn.title = 'Coördinaten picker'
   document.body.appendChild(toggleBtn)
-
-  // Crosshair overlay
-  crosshair = document.createElement('div')
-  crosshair.className = 'coord-helper-crosshair'
-  crosshair.innerHTML = `<svg viewBox="0 0 40 40" width="40" height="40" fill="none" stroke="#ff0000" stroke-width="1.5" opacity="0.7"><line x1="20" y1="0" x2="20" y2="16"/><line x1="20" y1="24" x2="20" y2="40"/><line x1="0" y1="20" x2="16" y2="20"/><line x1="24" y1="20" x2="40" y2="20"/><circle cx="20" cy="20" r="3"/></svg>`
-  document.body.appendChild(crosshair)
 
   // Results panel
   panel = document.createElement('div')
@@ -49,7 +48,6 @@ export function initClipHelper(map: Map): void {
     active = !active
     toggleBtn!.classList.toggle('is-active', active)
     panel!.classList.toggle('is-visible', active)
-    crosshair!.classList.toggle('is-visible', active)
 
     if (active) {
       map.getCanvas().style.cursor = 'crosshair'
@@ -64,9 +62,6 @@ export function initClipHelper(map: Map): void {
   // Map click handler
   map.on('click', (e: any) => {
     if (!active) return
-
-    // Prevent other click handlers
-    e.preventDefault?.()
 
     const coord: [number, number] = [
       parseFloat(e.lngLat.lng.toFixed(6)),
@@ -83,22 +78,26 @@ export function initClipHelper(map: Map): void {
     // Add entry
     const entry = document.createElement('div')
     entry.className = 'coord-helper-panel__entry'
+    const lng = String(coord[0])
+    const lat = String(coord[1])
+
     entry.innerHTML = `
       <span class="coord-helper-panel__number">${history.length}</span>
-      <span class="coord-helper-panel__coord">${coordText}</span>
-      <button class="coord-helper-panel__copy" title="Kopieer">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      </button>
+      <span class="coord-helper-panel__values">
+        <button class="coord-helper-panel__val" title="Kopieer lng">
+          <span class="coord-helper-panel__label">lng</span>
+          <span class="coord-helper-panel__coord">${lng}</span>
+        </button>
+        <button class="coord-helper-panel__val" title="Kopieer lat">
+          <span class="coord-helper-panel__label">lat</span>
+          <span class="coord-helper-panel__coord">${lat}</span>
+        </button>
+      </span>
     `
 
-    const copyBtn = entry.querySelector('.coord-helper-panel__copy')!
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(coordText)
-      copyBtn.innerHTML = '✓'
-      setTimeout(() => {
-        copyBtn.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`
-      }, 1500)
-    })
+    const valBtns = entry.querySelectorAll('.coord-helper-panel__val')
+    valBtns[0].addEventListener('click', () => copyVal(valBtns[0] as HTMLElement, lng))
+    valBtns[1].addEventListener('click', () => copyVal(valBtns[1] as HTMLElement, lat))
 
     coordsList!.appendChild(entry)
     coordsList!.scrollTop = coordsList!.scrollHeight

@@ -611,6 +611,36 @@ html {
   transform: rotate(180deg);
 }
 
+.sp-search-toggle {
+  position: absolute;
+  top: 8.8em;
+  right: -1.8em;
+  width: 1.8em;
+  height: 2.4em;
+  border: none;
+  cursor: pointer;
+  border-radius: 0 0.5em 0.5em 0;
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  padding: 0;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.2s ease, color 0.2s ease;
+  color: var(--color-text-muted);
+}
+
+.sp-search-toggle svg {
+  width: 0.85em;
+  height: 0.85em;
+}
+
+.sp-search-toggle:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
 /* ── Search bar ── */
 .sp-search-bar {
   position: absolute;
@@ -1297,6 +1327,10 @@ html {
     display: none;
   }
 
+  .sp-search-toggle {
+    display: none;
+  }
+
   .sp-hero__img {
     height: 7em;
   }
@@ -1700,20 +1734,6 @@ html {
   color: white;
 }
 
-.coord-helper-crosshair {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 999;
-  display: none;
-}
-
-.coord-helper-crosshair.is-visible {
-  display: block;
-}
-
 .coord-helper-panel {
   position: fixed;
   bottom: 4.5em;
@@ -1778,11 +1798,6 @@ html {
   gap: 0.4em;
   padding: 0.35em 0.4em;
   border-radius: 0.4em;
-  transition: background 0.1s ease;
-}
-
-.coord-helper-panel__entry:hover {
-  background: rgba(0, 0, 0, 0.04);
 }
 
 .coord-helper-panel__number {
@@ -1799,28 +1814,47 @@ html {
   flex-shrink: 0;
 }
 
-.coord-helper-panel__coord {
-  font-size: 0.65em;
-  font-family: 'Geist Mono', monospace;
-  color: #333;
+.coord-helper-panel__values {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
   flex: 1;
-  user-select: all;
 }
 
-.coord-helper-panel__copy {
+.coord-helper-panel__val {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
   border: none;
   background: none;
   cursor: pointer;
-  color: #999;
-  padding: 0.2em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 0.7em;
+  padding: 0.2em 0.3em;
+  border-radius: 0.3em;
+  transition: background 0.1s ease;
+  width: 100%;
+  text-align: left;
 }
 
-.coord-helper-panel__copy:hover {
+.coord-helper-panel__val:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.coord-helper-panel__val.is-copied {
+  background: rgba(0, 180, 0, 0.1);
+}
+
+.coord-helper-panel__label {
+  font-size: 0.55em;
+  font-weight: 600;
+  color: #999;
+  width: 1.8em;
+  flex-shrink: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.coord-helper-panel__coord {
+  font-size: 0.65em;
+  font-family: 'Geist Mono', monospace;
   color: #333;
 }
 

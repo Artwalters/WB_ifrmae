@@ -371,6 +371,12 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
         <polyline points="15 18 9 12 15 6"></polyline>
       </svg>
     </button>
+    <button class="sp-search-toggle" aria-label="Zoeken">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </button>
     ${properties.image ? `<div class="sp-hero">
       <img class="sp-hero__img" src="${properties.image}" alt="${properties.name}" />
       <div class="sp-hero__overlay" style="background-color: ${color};"></div>
@@ -440,6 +446,26 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       updateCompassPosition('open');
     }
   });
+
+  // Search toggle button — opens panel and focuses search
+  const searchToggleBtn = panelElement.querySelector('.sp-search-toggle') as HTMLElement;
+  if (searchToggleBtn) {
+    searchToggleBtn.addEventListener('click', () => {
+      const t = getPanelTarget();
+      if (!t?.classList.contains('is-open')) {
+        t?.classList.add('is-open');
+        t?.classList.remove('is-peeking');
+        updateCompassPosition('open');
+      }
+      // Focus the search input
+      setTimeout(() => {
+        const searchInput = panelElement!.querySelector('.sp-search-bar__input') as HTMLInputElement;
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }, 300);
+    });
+  }
 
   // Integrated search — setup for both desktop (in hero) and mobile (fixed top)
   setupSearch(panelElement);
