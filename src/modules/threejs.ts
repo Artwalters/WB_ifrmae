@@ -692,80 +692,84 @@ export function setupThreeJSLayer(map: Map): void {
 }
 
 /**
- * Add coordinate helper to map
- * Click anywhere on the map to see lat/lng coordinates in bottom-right corner
- * @param map - The mapbox map instance
+ * Add coordinate helper to map (dev tool)
+ * Click anywhere to place a red dot and see lat/lng with copy buttons
+ * Activate with ?coords=true in the URL
  */
 export function addCoordinateHelper(map: Map): void {
-  // Create display element
-  const coordDisplay = document.createElement('div');
-  coordDisplay.id = 'coord-helper';
-  coordDisplay.style.cssText = `
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 12px;
-    z-index: 1000;
-    pointer-events: none;
-    display: none;
-  `;
-  document.body.appendChild(coordDisplay);
+  // Only activate with ?coords=true
+  if (!new URLSearchParams(window.location.search).has('coords')) return;
 
-  // Store the current marker
+  const panel = document.createElement('div');
+  panel.id = 'coord-helper';
+  panel.innerHTML = `
+    <div style="margin-bottom:8px;font-weight:600;font-size:13px;">Coordinate Helper</div>
+    <div style="color:#999;font-size:11px;">Click on the map</div>
+  `;
+  panel.style.cssText = `
+    position:fixed;top:1em;left:1em;z-index:9999;
+    background:rgba(15,15,15,0.92);color:#fff;
+    padding:12px 16px;border-radius:8px;
+    font-family:monospace;font-size:12px;
+    backdrop-filter:blur(8px);
+    box-shadow:0 4px 20px rgba(0,0,0,0.3);
+    min-width:200px;
+  `;
+  document.body.appendChild(panel);
+
   let currentMarker: mapboxgl.Marker | null = null;
 
-  // Add click handler
+  const copyBtn = (label: string, value: string) =>
+    `<button data-copy="${value}" style="
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+      color:#fff;padding:6px 10px;border-radius:5px;cursor:pointer;
+      font-family:monospace;font-size:12px;margin-top:4px;
+      transition:background 0.15s;
+    ">
+      <span><span style="color:#888;">${label}:</span> ${value}</span>
+      <span style="font-size:10px;color:#888;">copy</span>
+    </button>`;
+
   map.on('click', (e) => {
     const { lng, lat } = e.lngLat;
-    const coordText = `[${lat.toFixed(6)}, ${lng.toFixed(6)}]`;
 
-    // Remove previous marker if it exists
-    if (currentMarker) {
-      currentMarker.remove();
-    }
+    if (currentMarker) currentMarker.remove();
 
-    // Create red dot marker
-    const markerElement = document.createElement('div');
-    markerElement.style.cssText = `
-      width: 12px;
-      height: 12px;
-      background-color: #ff0000;
-      border-radius: 50%;
-      border: 2px solid white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    const dot = document.createElement('div');
+    dot.style.cssText = `
+      width:14px;height:14px;background:#ff0000;border-radius:50%;
+      border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4);
     `;
-
-    // Add marker to map
-    currentMarker = new mapboxgl.Marker({ element: markerElement })
+    currentMarker = new mapboxgl.Marker({ element: dot })
       .setLngLat([lng, lat])
       .addTo(map);
 
-    // Copy to clipboard
-    navigator.clipboard
-      .writeText(coordText)
-      .then(() => {
-        coordDisplay.innerHTML = `
-        <div style="margin-bottom: 5px;"><strong>Coordinates:</strong></div>
-        <div>Lat: ${lat.toFixed(6)}</div>
-        <div>Lng: ${lng.toFixed(6)}</div>
-        <div style="margin-top: 5px; color: #4CAF50;">${coordText}</div>
-        <div style="margin-top: 5px; color: #FFD700; font-size: 11px;">✓ Copied to clipboard!</div>
-      `;
-      })
-      .catch(() => {
-        coordDisplay.innerHTML = `
-        <div style="margin-bottom: 5px;"><strong>Coordinates:</strong></div>
-        <div>Lat: ${lat.toFixed(6)}</div>
-        <div>Lng: ${lng.toFixed(6)}</div>
-        <div style="margin-top: 5px; color: #4CAF50;">${coordText}</div>
-      `;
-      });
+    panel.innerHTML = `
+      <div style="margin-bottom:8px;font-weight:600;font-size:13px;">Coordinate Helper</div>
+      ${copyBtn('Lat', lat.toFixed(6))}
+      ${copyBtn('Lng', lng.toFixed(6))}
+      ${copyBtn('Both', `${lat.toFixed(6)}, ${lng.toFixed(6)}`)}
+      <div id="coord-feedback" style="margin-top:6px;font-size:10px;color:#666;height:14px;"></div>
+    `;
 
-    coordDisplay.style.display = 'block';
+    panel.querySelectorAll('[data-copy]').forEach((btn) => {
+      btn.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const val = (btn as HTMLElement).getAttribute('data-copy')!;
+        navigator.clipboard.writeText(val).then(() => {
+          const fb = panel.querySelector('#coord-feedback')!;
+          fb.textContent = `Copied: ${val}`;
+          (fb as HTMLElement).style.color = '#4CAF50';
+          setTimeout(() => { fb.textContent = ''; }, 2000);
+        });
+      });
+      (btn as HTMLElement).addEventListener('mouseenter', () => {
+        (btn as HTMLElement).style.background = 'rgba(255,255,255,0.15)';
+      });
+      (btn as HTMLElement).addEventListener('mouseleave', () => {
+        (btn as HTMLElement).style.background = 'rgba(255,255,255,0.08)';
+      });
+    });
   });
 }

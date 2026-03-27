@@ -25,7 +25,7 @@ import {
   handleSnapchatLink,
 } from './modules/popups.js';
 import { state } from './modules/state.js';
-import { setupThreeJSLayer } from './modules/threejs.js';
+import { setupThreeJSLayer, addCoordinateHelper } from './modules/threejs.js';
 import { eventBus, Events } from './modules/eventBus.js';
 import { resourceManager } from './modules/resourceManager.js';
 import { initCompass } from './modules/compass.js';
@@ -67,6 +67,7 @@ window.Webflow.push(async (): Promise<void> => {
     setupBoundaryCheck(map);
     setupPOIFiltering(map);
     setupThreeJSLayer(map);
+    addCoordinateHelper(map);
 
     // Handle map clicks
     map.on('click', (e) => {
