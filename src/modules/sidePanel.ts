@@ -382,6 +382,8 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       <div class="sp-hero__overlay" style="background-color: ${color};"></div>
       ${socialIcons ? `<div class="sp-socials">${socialIcons}</div>` : ''}
       ${properties.logo_wb ? `<img class="sp-hero__logo" src="${properties.logo_wb}" alt="${properties.name}" />` : ''}
+    </div>` : ''}
+    <div class="sp-search-section">
       <div class="sp-search-bar">
         <svg class="sp-search-bar__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
@@ -396,12 +398,12 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
         </button>
       </div>
       <div class="sp-search-dropdown" style="display:none;"></div>
-    </div>` : ''}
-    <div class="sp-head">
+    </div>
+    ${properties.name ? `<div class="sp-head">
       ${properties.category ? `<span class="sp-head__cat" style="color: ${color};">${translateCategory(properties.category)}</span>` : ''}
       <h2 class="sp-head__name">${properties.name}</h2>
       ${actionLinks ? `<div class="sp-action-links">${actionLinks}</div>` : ''}
-    </div>
+    </div>` : ''}
     <div class="sp-body">
       ${sections}
     </div>

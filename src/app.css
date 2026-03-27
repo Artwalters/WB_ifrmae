@@ -642,6 +642,25 @@ html {
 }
 
 /* ── Search bar ── */
+.sp-search-section {
+  position: relative;
+  padding: 0.75em 0.75em 0;
+}
+
+.sp-search-section .sp-search-bar {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+}
+
+.sp-search-section .sp-search-dropdown {
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+}
+
 .sp-search-bar {
   position: absolute;
   top: 0.75em;
@@ -1281,7 +1300,8 @@ html {
   }
 
   .sp-hero .sp-search-bar,
-  .sp-hero .sp-search-dropdown {
+  .sp-hero .sp-search-dropdown,
+  .sp-search-section {
     display: none;
   }
 

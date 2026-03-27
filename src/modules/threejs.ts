@@ -547,18 +547,14 @@ export function createThreeJSLayer(): CustomLayer {
                   const isWindowMaterial =
                     baseMaterialName === 'ramen' || materialColor === 'WINDOW';
                   if (isWindowMaterial) {
-                    // Create new MeshPhysicalMaterial for frosted glass effect
-                    const glassMaterial = new THREE.MeshPhysicalMaterial({
-                      color: '#9eb8c9', // Meer grijsblauw
-                      emissive: '#6b8fa3', // Grijsblauw gloei effect
-                      emissiveIntensity: 0.7, // Tussen sterkte
-                      transparent: false, // Transparantie aan
-                      opacity: 0.9, // Minder transparant
-                      metalness: 0.4, // Minimale metalness
-                      roughness: 0.9, // Hoge roughness voor frosted effect
-                      transmission: 0.5, // Licht transmissie voor glas effect
-                      // thickness: 0.5, // Removed - not supported in this THREE version
-                      side: THREE.DoubleSide, // Render both sides to fix normal issues
+                    // Light matte window material - opaque, no reflections
+                    const glassMaterial = new THREE.MeshStandardMaterial({
+                      color: '#c4d8e4',
+                      emissive: '#9bbcce',
+                      emissiveIntensity: 0.3,
+                      metalness: 0.0,
+                      roughness: 1.0,
+                      side: THREE.DoubleSide,
                     });
                     child.material = glassMaterial;
                   } else if (textureUrl) {
