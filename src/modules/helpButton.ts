@@ -50,7 +50,7 @@ interface GuideTexts {
 
 const guideTexts: Record<string, GuideTexts> = {
   nl: {
-    welcome: 'Welkom bij de kaart!',
+    welcome: 'Welkom bij Woonboulevard Heerlen',
     welcomeText: 'We laten je in een paar stappen zien hoe je de kaart kunt gebruiken.',
     done: 'Klaar!',
     next: 'Volgende',
@@ -148,7 +148,7 @@ const guideTexts: Record<string, GuideTexts> = {
     ],
   },
   en: {
-    welcome: 'Welcome to the map!',
+    welcome: 'Welcome to Woonboulevard Heerlen',
     welcomeText: 'We\'ll show you how to use the map in a few simple steps.',
     done: 'Done!',
     next: 'Next',
@@ -246,7 +246,7 @@ const guideTexts: Record<string, GuideTexts> = {
     ],
   },
   de: {
-    welcome: 'Willkommen auf der Karte!',
+    welcome: 'Willkommen bei Woonboulevard Heerlen',
     welcomeText: 'Wir zeigen Ihnen in wenigen Schritten, wie Sie die Karte verwenden.',
     done: 'Fertig!',
     next: 'Weiter',
@@ -364,21 +364,6 @@ function getTargetRect(selector: string): DOMRect | null {
 function positionTooltip(step: GuideStep): void {
   if (!tooltip || !spotlight) return
 
-  // Tooltip always centered on screen
-  tooltip.removeAttribute('data-pos')
-
-  if (isMobile()) {
-    // On mobile: tooltip centered
-    tooltip.style.top = '50%'
-    tooltip.style.left = '50%'
-    tooltip.style.transform = 'translate(-50%, -50%)'
-  } else {
-    // On desktop: tooltip centered
-    tooltip.style.top = '50%'
-    tooltip.style.left = '50%'
-    tooltip.style.transform = 'translate(-50%, -50%)'
-  }
-
   // Spotlight: highlight the target element if it's not the canvas
   const rect = getTargetRect(step.target)
   if (rect && step.target !== '.mapboxgl-canvas') {
@@ -458,13 +443,7 @@ export function initHelpButton(): void {
   btn.setAttribute('aria-label', t.welcome)
   btn.innerHTML = '?'
 
-  // On mobile: place inside map-controls (above compass), on desktop: fixed position
-  const mapControls = document.querySelector('.map-controls')
-  if (isMobile() && mapControls) {
-    mapControls.prepend(btn)
-  } else {
-    document.body.appendChild(btn)
-  }
+  document.body.appendChild(btn)
 
   overlay = document.createElement('div')
   overlay.className = 'guide-overlay'
@@ -479,7 +458,6 @@ export function initHelpButton(): void {
   welcome.className = 'guide-welcome'
   welcome.innerHTML = `
     <div class="guide-welcome__content">
-      <div class="guide-welcome__icon">🗺️</div>
       <h3 class="guide-welcome__title">${t.welcome}</h3>
       <p class="guide-welcome__text">${t.welcomeText}</p>
       <button class="guide-welcome__start">${t.start}</button>
@@ -520,13 +498,7 @@ export function initHelpButton(): void {
     overlay!.classList.add('is-visible')
   })
 
-  // Auto-open on first visit
-  try {
-    if (!localStorage.getItem(STORAGE_KEY)) {
-      welcome.classList.add('is-visible')
-      overlay.classList.add('is-visible')
-    }
-  } catch {}
+  // Only opens via the ? button — no auto-open
 
   // Stop clicks inside tooltip/welcome content from bubbling to overlay
   tooltip.addEventListener('click', (e) => e.stopPropagation())

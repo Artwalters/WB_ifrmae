@@ -105,6 +105,7 @@ html {
   border-radius: 0.375em !important;
   box-shadow: var(--shadow-sm) !important;
   overflow: hidden;
+  touch-action: manipulation;
 }
 
 .mapboxgl-ctrl-group button {
@@ -1249,7 +1250,7 @@ html {
 }
 
 .sp-similar__name {
-  font-size: var(--font-base);
+  font-size: var(--font-sm);
   font-weight: 600;
   color: var(--color-text);
   padding: 0.55em 0.65em 0.15em;
@@ -1531,7 +1532,8 @@ html {
     display: flex;
     position: absolute;
     top: -1.8em;
-    left: 1.5em;
+    left: 50%;
+    transform: translateX(-50%);
     right: auto;
     width: 5.5em;
     height: 1.8em;
@@ -1576,6 +1578,7 @@ html {
   right: 1.2em;
   z-index: 999;
   display: flex;
+  touch-action: manipulation;
   flex-direction: column;
   align-items: center;
   gap: 0.6em;
@@ -1726,13 +1729,14 @@ html {
 
 .help-btn {
   position: fixed;
-  bottom: 1.2em;
-  right: 1.2em;
-  width: 5em;
-  height: 5em;
+  bottom: 0.5em;
+  right: 0.5em;
+  width: 2.4rem;
+  height: 2.4rem;
+  touch-action: manipulation;
   border: none;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(8px);
   cursor: pointer;
   z-index: 998;
@@ -1740,15 +1744,16 @@ html {
   align-items: center;
   justify-content: center;
   box-shadow: var(--shadow-md);
+  font-size: var(--font-lg);
   font-weight: 700;
-  color: #1a1a1a;
+  color: #fff;
   font-family: 'Montserrat', sans-serif;
   transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
 .help-btn:hover {
-  background: rgba(230, 230, 230, 0.95);
-  color: #111;
+  background: rgba(0, 0, 0, 0.95);
+  color: #fff;
   transform: scale(1.05);
 }
 
@@ -1757,6 +1762,7 @@ html {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
+  touch-action: manipulation;
   z-index: 10000;
   opacity: 0;
   pointer-events: none;
@@ -2007,11 +2013,14 @@ html {
 
 @media screen and (max-width: 767px) {
   .help-btn {
-    position: static;
-    width: 5em;
-    height: 5em;
-    order: -1;
-    margin-bottom: 1.5em;
+    position: fixed;
+    bottom: 0.5em;
+    left: 0.5em;
+    right: auto;
+    width: 2.4rem;
+    height: 2.4rem;
+    z-index: 1001;
+    margin: 0;
   }
 
   .guide-tooltip {
