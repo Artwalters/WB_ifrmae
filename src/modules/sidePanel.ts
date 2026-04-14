@@ -448,13 +448,14 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
 
   toggleBtn.addEventListener('click', () => {
     const t = getPanelTarget();
-    if (t?.classList.contains('is-open')) {
-      t.classList.remove('is-open');
+    if (t?.classList.contains('is-peeking')) {
       t.classList.remove('is-peeking');
+      updateCompassPosition('open');
+    } else if (t?.classList.contains('is-open')) {
+      t.classList.remove('is-open');
       updateCompassPosition('closed');
     } else {
       t?.classList.add('is-open');
-      t?.classList.remove('is-peeking');
       updateCompassPosition('open');
     }
   });
@@ -630,9 +631,25 @@ export function setupMobilePeek(map: any): void {
   document.addEventListener('touchstart', (e) => {
     if (!isMobile() || !panelElement) return;
     const target = getPanelTarget()!;
-    if (target.contains(e.target as Node) && target.classList.contains('is-peeking')) {
-      target.classList.remove('is-peeking');
-      updateCompassPosition('open');
-    }
+    const touchNode = e.target as Node;
+    if (!target.contains(touchNode) || !target.classList.contains('is-peeking')) return;
+
+    // If the touch is on the toggle button, let its own click handler un-peek
+    // so the synthesized click lands correctly on the toggle.
+    const toggleBtn = target.querySelector('.sp-toggle, .sp-toggle-mobile');
+    if (toggleBtn?.contains(touchNode)) return;
+
+    target.classList.remove('is-peeking');
+    updateCompassPosition('open');
+
+    // Suppress the synthesized click on panel contents: the panel slides up
+    // during the touch, so the click would otherwise land on whatever element
+    // ends up under the finger (often a CTA button).
+    const panel = panelElement;
+    const prev = panel.style.pointerEvents;
+    panel.style.pointerEvents = 'none';
+    setTimeout(() => {
+      panel.style.pointerEvents = prev;
+    }, 500);
   });
 }

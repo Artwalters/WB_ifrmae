@@ -1553,8 +1553,11 @@ html {
     width: 1em;
     height: 1em;
     transform: rotate(-90deg);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* Peeking or closed → arrow points up (next tap brings panel up) */
+  .side-panel-wrapper.is-peeking .sp-toggle-mobile svg,
   .side-panel-wrapper:not(.is-open) .sp-toggle-mobile svg {
     transform: rotate(90deg);
   }

@@ -71,11 +71,14 @@ window.Webflow.push(async (): Promise<void> => {
 
     // Handle map clicks
     map.on('click', (e) => {
-      // Check if click is on a marker
-      const features = map.queryRenderedFeatures(e.point);
+      // Only query our own marker layers — otherwise basemap features
+      // (roads, buildings, labels) without Point geometry reach createPopup
+      // and break flyTo with an invalid LngLat.
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['location-markers', 'location-icons', 'location-labels'],
+      });
       if (features.length > 0) {
-        const location = features[0];
-        createPopup(location, map);
+        createPopup(features[0], map);
       } else {
         closeActivePopup();
       }
