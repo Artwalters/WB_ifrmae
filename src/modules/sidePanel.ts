@@ -328,8 +328,8 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     if (cat && !categories.includes(cat)) categories.push(cat);
   });
 
-  // Build a slider per category (max 4 categories)
-  const categorySliders = categories.slice(0, 4).map((cat) => {
+  // Build a slider per category — show all categories
+  const categorySliders = categories.map((cat) => {
     const shops = allShops
       .filter((f: any) => f.properties.category === cat)
       .slice(0, 8);
@@ -346,9 +346,7 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
       const c = p.color || '#6B46C1';
       cards += `
         <button class="sp-similar__card" data-name="${p.name}">
-          <div class="sp-similar__image" style="background-image: url('${p.image || ''}'); background-color: ${c};">
-            <div class="sp-similar__color-overlay" style="background-color: ${c};"></div>
-          </div>
+          <div class="sp-similar__image" style="background-image: url('${p.image || ''}'); background-color: ${c};"></div>
           <span class="sp-similar__name">${p.name}</span>
           <span class="sp-similar__cat">${p.category ? translateCategory(p.category) : ''}</span>
         </button>`;
@@ -405,7 +403,6 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     </div>
     ${properties.image ? `<div class="sp-hero">
       <img class="sp-hero__img" src="${properties.image}" alt="${properties.name}" />
-      <div class="sp-hero__overlay" style="background-color: ${color};"></div>
       ${socialIcons ? `<div class="sp-socials">${socialIcons}</div>` : ''}
       ${properties.logo_wb ? `<img class="sp-hero__logo" src="${properties.logo_wb}" alt="${properties.name}" />` : ''}
     </div>` : ''}
@@ -440,7 +437,11 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
   const wrapper = panelElement.parentElement;
 
   if (isMobileNow && wrapper?.classList.contains('side-panel-wrapper')) {
-    // Move toggle from panel to wrapper so it sits above the scrollable area
+    // Move toggle from panel to wrapper so it sits above the scrollable area.
+    // Remove any toggles left over from previous openSidePanel calls — otherwise
+    // they stack in the wrapper and the document touchstart handler's
+    // querySelector returns a stale toggle, breaking the toggle-tap detection.
+    wrapper.querySelectorAll(':scope > .sp-toggle-mobile').forEach((el) => el.remove());
     toggleBtn.remove();
     wrapper.appendChild(toggleBtn);
     toggleBtn.classList.add('sp-toggle-mobile');
