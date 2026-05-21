@@ -328,11 +328,10 @@ export function openSidePanel(properties: any, coordinates?: [number, number]): 
     if (cat && !categories.includes(cat)) categories.push(cat);
   });
 
-  // Build a slider per category — show all categories
+  // Build a slider per category — show all categories and all shops
   const categorySliders = categories.map((cat) => {
     const shops = allShops
-      .filter((f: any) => f.properties.category === cat)
-      .slice(0, 8);
+      .filter((f: any) => f.properties.category === cat);
 
     if (shops.length === 0) return '';
 
